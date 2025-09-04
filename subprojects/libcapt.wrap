@@ -1,0 +1,5 @@
+[wrap-git]
+url = https://github.com/darkvision77/libcapt.git
+revision = v0.1.1
+clone-recursive = false
+depth = 1

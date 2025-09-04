@@ -1,0 +1,73 @@
+/*
+ * NOTE: This file is auto-generated
+ */
+
+// Letter: PageSize=1 PaperSize=13 imageSize=(4896, 6368) paperSizePx=(5100, 6600) captMargins=(507, 510, 499, 501)
+CustomMedia Letter 612 792 0 0 0 0
+    "<</PageSize[612 792]/ImagingBBox null/cupsMediaType 13/cupsInteger0 0/cupsInteger1 1/cupsInteger2 5100/cupsInteger3 6600>>setpagedevice"
+    "<</PageSize[612 792]/ImagingBBox null/cupsMediaType 13/cupsInteger0 0/cupsInteger1 1/cupsInteger2 5100/cupsInteger3 6600>>setpagedevice"
+
+// Legal: PageSize=5 PaperSize=12 imageSize=(4896, 8192) paperSizePx=(5100, 8400) captMargins=(507, 509, 499, 501)
+CustomMedia Legal 612 1008 0 0 0 0
+    "<</PageSize[612 1008]/ImagingBBox null/cupsMediaType 12/cupsInteger0 0/cupsInteger1 1/cupsInteger2 5100/cupsInteger3 8400>>setpagedevice"
+    "<</PageSize[612 1008]/ImagingBBox null/cupsMediaType 12/cupsInteger0 0/cupsInteger1 1/cupsInteger2 5100/cupsInteger3 8400>>setpagedevice"
+
+// Executive: PageSize=7 PaperSize=10 imageSize=(4096, 6080) paperSizePx=(4350, 6300) captMargins=(507, 509, 533, 548)
+CustomMedia Executive 522 756 0 0 0 0
+    "<</PageSize[522 756]/ImagingBBox null/cupsMediaType 10/cupsInteger0 0/cupsInteger1 1/cupsInteger2 4350/cupsInteger3 6300>>setpagedevice"
+    "<</PageSize[522 756]/ImagingBBox null/cupsMediaType 10/cupsInteger0 0/cupsInteger1 1/cupsInteger2 4350/cupsInteger3 6300>>setpagedevice"
+
+// A4: PageSize=9 PaperSize=2 imageSize=(4768, 6784) paperSizePx=(4960, 7014) captMargins=(507, 508, 474, 477)
+*CustomMedia A4 595 842 0 0 0 0
+    "<</PageSize[595 842]/ImagingBBox null/cupsMediaType 2/cupsInteger0 0/cupsInteger1 1/cupsInteger2 4960/cupsInteger3 7014>>setpagedevice"
+    "<</PageSize[595 842]/ImagingBBox null/cupsMediaType 2/cupsInteger0 0/cupsInteger1 1/cupsInteger2 4960/cupsInteger3 7014>>setpagedevice"
+
+// A5: PageSize=11 PaperSize=3 imageSize=(3296, 4736) paperSizePx=(3506, 4960) captMargins=(507, 512, 491, 492)
+CustomMedia A5 420 595 0 0 0 0
+    "<</PageSize[420 595]/ImagingBBox null/cupsMediaType 3/cupsInteger0 0/cupsInteger1 1/cupsInteger2 3506/cupsInteger3 4960>>setpagedevice"
+    "<</PageSize[420 595]/ImagingBBox null/cupsMediaType 3/cupsInteger0 0/cupsInteger1 1/cupsInteger2 3506/cupsInteger3 4960>>setpagedevice"
+
+// B5: PageSize=13 PaperSize=7 imageSize=(4032, 5856) paperSizePx=(4298, 6070) captMargins=(507, 513, 567, 565)
+CustomMedia B5 516 729 0 0 0 0
+    "<</PageSize[516 729]/ImagingBBox null/cupsMediaType 7/cupsInteger0 0/cupsInteger1 1/cupsInteger2 4298/cupsInteger3 6070>>setpagedevice"
+    "<</PageSize[516 729]/ImagingBBox null/cupsMediaType 7/cupsInteger0 0/cupsInteger1 1/cupsInteger2 4298/cupsInteger3 6070>>setpagedevice"
+
+// Com10: PageSize=20 PaperSize=22 imageSize=(2272, 5472) paperSizePx=(2480, 5692) captMargins=(507, 510, 507, 491)
+CustomMedia Com10 297 684 0 0 0 0
+    "<</PageSize[297 684]/ImagingBBox null/cupsMediaType 22/cupsInteger0 0/cupsInteger1 1/cupsInteger2 2480/cupsInteger3 5692>>setpagedevice"
+    "<</PageSize[297 684]/ImagingBBox null/cupsMediaType 22/cupsInteger0 0/cupsInteger1 1/cupsInteger2 2480/cupsInteger3 5692>>setpagedevice"
+
+// dl_envelope: PageSize=27 PaperSize=24 imageSize=(2400, 4960) paperSizePx=(2598, 5196) captMargins=(507, 513, 491, 485)
+CustomMedia dl_envelope 312 624 0 0 0 0
+    "<</PageSize[312 624]/ImagingBBox null/cupsMediaType 24/cupsInteger0 0/cupsInteger1 1/cupsInteger2 2598/cupsInteger3 5196>>setpagedevice"
+    "<</PageSize[312 624]/ImagingBBox null/cupsMediaType 24/cupsInteger0 0/cupsInteger1 1/cupsInteger2 2598/cupsInteger3 5196>>setpagedevice"
+
+// Envelope_C5: PageSize=28 PaperSize=21 imageSize=(3616, 5184) paperSizePx=(3826, 5408) captMargins=(507, 521, 507, 507)
+CustomMedia Envelope_C5 459 649 0 0 0 0
+    "<</PageSize[459 649]/ImagingBBox null/cupsMediaType 21/cupsInteger0 0/cupsInteger1 1/cupsInteger2 3826/cupsInteger3 5408>>setpagedevice"
+    "<</PageSize[459 649]/ImagingBBox null/cupsMediaType 21/cupsInteger0 0/cupsInteger1 1/cupsInteger2 3826/cupsInteger3 5408>>setpagedevice"
+
+// Monarch: PageSize=37 PaperSize=23 imageSize=(2112, 4288) paperSizePx=(2314, 4510) captMargins=(507, 510, 457, 443)
+CustomMedia Monarch 279 540 0 0 0 0
+    "<</PageSize[279 540]/ImagingBBox null/cupsMediaType 23/cupsInteger0 0/cupsInteger1 1/cupsInteger2 2314/cupsInteger3 4510>>setpagedevice"
+    "<</PageSize[279 540]/ImagingBBox null/cupsMediaType 23/cupsInteger0 0/cupsInteger1 1/cupsInteger2 2314/cupsInteger3 4510>>setpagedevice"
+
+// Postcard: PageSize=43 PaperSize=14 imageSize=(2144, 3296) paperSizePx=(2362, 3506) captMargins=(507, 510, 524, 536)
+CustomMedia Postcard 283 420 0 0 0 0
+    "<</PageSize[283 420]/ImagingBBox null/cupsMediaType 14/cupsInteger0 0/cupsInteger1 1/cupsInteger2 2362/cupsInteger3 3506>>setpagedevice"
+    "<</PageSize[283 420]/ImagingBBox null/cupsMediaType 14/cupsInteger0 0/cupsInteger1 1/cupsInteger2 2362/cupsInteger3 3506>>setpagedevice"
+
+// dbl_postcard: PageSize=82 PaperSize=15 imageSize=(3296, 4512) paperSizePx=(3506, 4724) captMargins=(507, 511, 491, 492)
+CustomMedia dbl_postcard 420 567 0 0 0 0
+    "<</PageSize[420 567]/ImagingBBox null/cupsMediaType 15/cupsInteger0 0/cupsInteger1 1/cupsInteger2 3506/cupsInteger3 4724>>setpagedevice"
+    "<</PageSize[420 567]/ImagingBBox null/cupsMediaType 15/cupsInteger0 0/cupsInteger1 1/cupsInteger2 3506/cupsInteger3 4724>>setpagedevice"
+
+// jenv_you4: PageSize=91 PaperSize=26 imageSize=(2272, 5312) paperSizePx=(2480, 5550) captMargins=(507, 511, 507, 506)
+CustomMedia jenv_you4 296 666 0 0 0 0
+    "<</PageSize[296 666]/ImagingBBox null/cupsMediaType 26/cupsInteger0 0/cupsInteger1 1/cupsInteger2 2480/cupsInteger3 5550>>setpagedevice"
+    "<</PageSize[296 666]/ImagingBBox null/cupsMediaType 26/cupsInteger0 0/cupsInteger1 1/cupsInteger2 2480/cupsInteger3 5550>>setpagedevice"
+
+// Index_3x5: PageSize=4600 PaperSize=0 imageSize=(1568, 2784) paperSizePx=(1800, 3000) captMargins=(507, 510, 558, 560)
+CustomMedia Index_3x5 216 360 0 0 0 0
+    "<</PageSize[216 360]/ImagingBBox null/cupsMediaType 0/cupsInteger0 0/cupsInteger1 1/cupsInteger2 1800/cupsInteger3 3000>>setpagedevice"
+    "<</PageSize[216 360]/ImagingBBox null/cupsMediaType 0/cupsInteger0 0/cupsInteger1 1/cupsInteger2 1800/cupsInteger3 3000>>setpagedevice"

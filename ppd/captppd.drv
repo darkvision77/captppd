@@ -1,0 +1,98 @@
+#include <font.defs>
+#include <media.defs>
+
+Manufacturer "Canon"
+Version $CAPTBACKEND_VERSION
+
+Font *
+
+DriverType custom
+
+Filter application/vnd.cups-raster 0 -
+Filter application/vnd.cups-command 0 -
+Attribute cupsCommands "" "Clean"
+
+ColorDevice no
+*ColorModel Black k chunky 0
+*Resolution k 1 0 0 0 "600dpi/600 DPI"
+ManualCopies yes
+
+// cupsInteger0 - MarginLeft
+// cupsInteger1 - MarginTop
+// cupsInteger2 - PaperWidth
+// cupsInteger3 - PaperHeight
+
+// cupsInteger4 - SmoothEnable
+// cupsInteger5 - TonerSaving
+// cupsCompression - TonerDensity
+// cupsMediaType - PaperSize
+
+#include "media.drv"
+
+*MediaType 0 "PlainPaper/Plain Paper"
+MediaType 2 "PlainPaperL/Plain Paper L"
+MediaType 2 "Ohp/Transparency"
+MediaType 1 "ThickPaper/Thick Paper"
+MediaType 4 "ThickPaperH/Thick Paper H"
+
+Darkness 0x00 "1/Extra Light"
+Darkness 0x0f "2/Light"
+*Darkness 0x1f "3/Normal"
+Darkness 0x2f "4/Dark"
+Darkness 0x3f "5/Extra Dark"
+
+Option "imageRefinement/Image Refinement" PickOne AnySetup 20
+    Choice "False/Disabled" "<</cupsInteger4 0>>setpagedevice"
+    *Choice "True/Enabled" "<</cupsInteger4 1>>setpagedevice"
+
+Option "tonerSaving/Toner Saving" PickOne AnySetup 30
+    *Choice "False/Disabled" "<</cupsInteger5 0>>setpagedevice"
+    Choice "True/Enabled" "<</cupsInteger5 1>>setpagedevice"
+
+#if HAVE_DITHERING_TYPE
+Option "cupsHalftoneType/Dithering type" PickOne AnySetup 40
+    *Choice "auto/Default algorithm" ""
+    Choice "stochastic/Stochastic algorithm" ""
+    Choice "bi-level/Bi-level (label printing)" ""
+    Choice "foo2zjs/foo2zjs algorithm" ""
+#endif
+
+{
+    ModelName "LBP800"
+    Attribute "NickName" "" "Canon LBP800, captppd $CAPTBACKEND_VERSION"
+    Throughput 8
+    // Attribute "1284DeviceID" "" "" // TODO
+    PCFileName "LBP800CAPTPPD.ppd"
+}
+
+{
+    ModelName "LBP810"
+    Attribute "NickName" "" "Canon LBP810, captppd $CAPTBACKEND_VERSION"
+    Throughput 8
+    // Attribute "1284DeviceID" "" "" // TODO
+    PCFileName "LBP810CAPTPPD.ppd"
+}
+
+{
+    ModelName "LBP1120"
+    Attribute "NickName" "" "Canon LBP1120, captppd $CAPTBACKEND_VERSION"
+    Throughput 10
+    Attribute "1284DeviceID" "" "MFG:Canon;MDL:LASER SHOT LBP-1120;CMD:CAPT;VER:1.0;CLS:PRINTER;DES:Canon LASER SHOT LBP-1120"
+    PCFileName "LBP1120CAPTPPD.ppd"
+}
+
+{
+    ModelName "LBP1210"
+    Attribute "NickName" "" "Canon LBP1210, captppd $CAPTBACKEND_VERSION"
+    Throughput 14
+    // Attribute "1284DeviceID" "" "" // TODO
+    PCFileName "LBP1210CAPTPPD.ppd"
+}
+
+{
+    ModelName "LBP3200"
+    Attribute "NickName" "" "Canon LBP3200, captppd $CAPTBACKEND_VERSION"
+    Throughput 18
+    Attribute "1284DeviceID" "" "MFG:Canon;MDL:LBP3200;CMD:CAPT;VER:1.0;CLS:PRINTER;DES:Canon LBP3200"
+    PCFileName "LBP3200CAPTPPD.ppd"
+}

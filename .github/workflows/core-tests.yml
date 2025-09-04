@@ -1,0 +1,108 @@
+name: Core tests
+on: [push, pull_request]
+
+jobs:
+  Ubuntu:
+    strategy:
+      fail-fast: false
+      matrix:
+        os:
+          - ubuntu-22.04
+          - ubuntu-24.04
+    name: ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install apt packages
+        run: |
+          sudo apt-get update -y --fix-missing
+          sudo apt-get install -y python3-pip gcc pkg-config ninja-build cups cups-ppdc libcups2-dev libusb-1.0-0-dev
+
+      - name: Install meson
+        run: sudo pip3 install --upgrade meson
+
+      - name: Start CUPS service
+        run: sudo systemctl start cups
+
+      - name: Configure
+        run: meson setup build
+
+      - name: Compile
+        run: meson compile -C build
+
+      - name: Install
+        run: sudo meson install -C build
+
+      - name: Verify install with lpadmin
+        run: sudo lpadmin -p LBP3200 -E -v 'captusb://Canon/LBP3200?serial=00000000' -m LBP3200CAPTPPD.ppd || (cat /var/log/cups/error_log && false)
+
+  Debian:
+    needs: Ubuntu
+    strategy:
+      fail-fast: false
+      matrix:
+        os-version:
+          - "12"
+          - "13"
+    name: Debian ${{ matrix.os-version }}
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Set up Docker
+        uses: docker/setup-buildx-action@v3
+      - name: Run Debian container
+        run: |
+          docker run --rm -v $(pwd):/workspace -w /workspace debian:${{ matrix.os-version }}-slim /bin/bash -c "
+          set -eou pipefail
+          export GITHUB_ACTIONS=true
+          apt-get update -y --fix-missing
+          apt-get install -y python3-pip gcc pkg-config ninja-build cups cups-ppdc libcups2-dev libusb-1.0-0-dev git
+          pip3 install --break-system-packages --upgrade meson
+          /usr/sbin/cupsd
+          meson setup build
+          meson compile -C build
+          meson install -C build
+          lpadmin -p LBP3200 -E -v 'captusb://Canon/LBP3200?serial=00000000' -m LBP3200CAPTPPD.ppd || (cat /var/log/cups/error_log && false)
+          "
+
+  FreeBSD:
+    needs: Ubuntu
+    strategy:
+      fail-fast: false
+      matrix:
+        release:
+          - "13.5"
+          - "14.3"
+    defaults:
+      run:
+        shell: freebsd {0}
+    name: FreeBSD ${{ matrix.release }}-RELEASE
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Start FreeBSD VM
+        uses: vmactions/freebsd-vm@v1
+        with:
+          release: ${{ matrix.release }}
+          prepare: pkg install -y meson pkgconf llvm-devel cups git
+          envs: 'GITHUB_ACTIONS'
+
+      - name: Start CUPS service
+        run: service cupsd onestart
+
+      - name: Configure
+        run: cd $GITHUB_WORKSPACE && meson setup build -Dcpp_args="-fexperimental-library"
+
+      - name: Compile
+        run: cd $GITHUB_WORKSPACE && meson compile -C build
+
+      - name: Install
+        run: cd $GITHUB_WORKSPACE && meson install -C build
+
+      - name: Verify install with lpadmin
+        run: lpadmin -p LBP3200 -E -v 'captusb://Canon/LBP3200?serial=00000000' -m LBP3200CAPTPPD.ppd || (cat /var/log/cups/error_log && false)
