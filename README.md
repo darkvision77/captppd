@@ -103,5 +103,9 @@ grep '\] \[Job' /var/log/cups/error_log
 ```
 5. [Create an issue](https://github.com/darkvision77/captppd/issues/new) and attach the log.
 
+## See also
+- [UoWPrint](https://printserver.ink/) — convert your old USB printer (or MFP) into Wi-Fi printer/MFP
+- [mounaiban/captdriver](https://github.com/mounaiban/captdriver) — open source CUPS driver for the newer Canon LBP models
+
 ## License
 captppd is licensed under a 2-clause BSD license.
