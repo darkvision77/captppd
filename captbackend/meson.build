@@ -18,7 +18,7 @@ captbackend_lib = static_library(
     install: false,
 )
 captbackend_dep = declare_dependency(
-    link_whole: [captbackend_lib],
+    link_with: [captbackend_lib],
     dependencies: [cups_dep, libcapt_dep, libusb_dep],
     include_directories: include_directories('.'),
 )
