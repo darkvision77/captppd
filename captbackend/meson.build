@@ -1,28 +1,32 @@
-cups_dep = dependency('cups')
-libusb_dep = dependency('libusb-1.0')
-libcapt_dep = dependency('libcapt', fallback: ['libcapt', 'libcapt_dep'], static: true)
-
 sources = files(
     'PrinterInfo.cpp',
     'CmdClean.cpp',
     'CmdPrint.cpp',
+)
+
+main_sources = files(
     'main.cpp',
 )
 
 subdir('Core')
 subdir('UsbBackend')
 
-executable(
+captbackend_lib = static_library(
     get_option('backendname'),
     sources,
     dependencies: [cups_dep, libcapt_dep, libusb_dep],
+    install: false,
+)
+captbackend_dep = declare_dependency(
+    link_whole: [captbackend_lib],
+    dependencies: [cups_dep, libcapt_dep, libusb_dep],
+    include_directories: include_directories('.'),
+)
 
-    cpp_args: [
-        '-DCAPTBACKEND_NAME="@0@"'.format(get_option('backendname')),
-        '-DCAPTBACKEND_VERSION="@0@"'.format(meson.project_version()),
-        '-DLIBCAPT_VERSION="@0@"'.format(libcapt_dep.version()),
-    ],
-
+executable(
+    get_option('backendname'),
+    main_sources,
+    dependencies: [captbackend_dep],
     install: true,
     install_mode: ['r-x------', 'root', 'root'],
     install_dir: cups_backend_dir,

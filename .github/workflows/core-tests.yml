@@ -23,14 +23,22 @@ jobs:
       - name: Install meson
         run: sudo pip3 install --upgrade meson
 
+      - name: Install gtest
+        run: |
+          mkdir -p subprojects
+          meson wrap install gtest
+
       - name: Start CUPS service
         run: sudo systemctl start cups
 
       - name: Configure
-        run: meson setup build
+        run: meson setup build -Db_sanitize=address,undefined -Dtests=enabled
 
       - name: Compile
         run: meson compile -C build
+
+      - name: Run tests
+        run: meson test -C build --print-errorlogs --suite=captppd
 
       - name: Install
         run: sudo meson install -C build
@@ -59,11 +67,12 @@ jobs:
           set -eou pipefail
           export GITHUB_ACTIONS=true
           apt-get update -y --fix-missing
-          apt-get install -y python3-pip gcc pkg-config ninja-build cups cups-ppdc libcups2-dev libusb-1.0-0-dev git
+          apt-get install -y python3-pip gcc libgtest-dev libgmock-dev pkg-config ninja-build cups cups-ppdc libcups2-dev libusb-1.0-0-dev git
           pip3 install --break-system-packages --upgrade meson
           /usr/sbin/cupsd
-          meson setup build
+          meson setup build -Db_sanitize=address,undefined -Dtests=enabled
           meson compile -C build
+          meson test -C build --print-errorlogs --suite=captppd
           meson install -C build
           lpadmin -p LBP3200 -E -v 'captusb://Canon/LBP3200?serial=00000000' -m LBP3200CAPTPPD.ppd || (cat /var/log/cups/error_log && false)
           "
@@ -89,17 +98,20 @@ jobs:
         uses: vmactions/freebsd-vm@v1
         with:
           release: ${{ matrix.release }}
-          prepare: pkg install -y meson pkgconf llvm-devel cups git
+          prepare: pkg install -y meson googletest pkgconf llvm-devel cups git
           envs: 'GITHUB_ACTIONS'
 
       - name: Start CUPS service
         run: service cupsd onestart
 
       - name: Configure
-        run: cd $GITHUB_WORKSPACE && meson setup build -Dcpp_args="-fexperimental-library"
+        run: cd $GITHUB_WORKSPACE && meson setup build -Db_sanitize=address,undefined -Dtests=enabled -Dcpp_args="-fexperimental-library"
 
       - name: Compile
         run: cd $GITHUB_WORKSPACE && meson compile -C build
+
+      - name: Run tests
+        run: cd $GITHUB_WORKSPACE && meson test -C build --print-errorlogs --suite=captppd
 
       - name: Install
         run: cd $GITHUB_WORKSPACE && meson install -C build

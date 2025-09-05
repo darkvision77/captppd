@@ -10,6 +10,7 @@ project(
         'warning_level=3',
         'cpp_std=c++23',
         'cpp_rtti=false',
+        'b_lundef=false',
     ],
     meson_version: '>=1.5.0',
 )
@@ -35,6 +36,17 @@ if cups_ppd_dir == ''
     cups_ppd_dir = cups_datadir / 'model'
 endif
 
+cups_dep = dependency('cups')
+libusb_dep = dependency('libusb-1.0')
+libcapt_dep = dependency('libcapt', fallback: ['libcapt', 'libcapt_dep'], static: true)
+
+add_project_arguments(
+    '-DCAPTBACKEND_NAME="@0@"'.format(get_option('backendname')),
+    '-DCAPTBACKEND_VERSION="@0@"'.format(meson.project_version()),
+    '-DLIBCAPT_VERSION="@0@"'.format(libcapt_dep.version()),
+    language: ['cpp'],
+)
+
 summary({
     'Backend name': get_option('backendname'),
     'CUPS backend directory': cups_backend_dir,
@@ -43,3 +55,4 @@ summary({
 
 subdir('captbackend')
 subdir('ppd')
+subdir('tests')
