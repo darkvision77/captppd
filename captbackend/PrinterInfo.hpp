@@ -1,9 +1,9 @@
 #ifndef _CAPTBACKEND_PRINTER_INFO_HPP_
 #define _CAPTBACKEND_PRINTER_INFO_HPP_
 
-#include "UsbBackend/UsbPrinter.hpp"
 #include <ostream>
 #include <string>
+#include <string_view>
 
 struct PrinterInfo {
     std::string DeviceId;
@@ -15,7 +15,7 @@ struct PrinterInfo {
     std::string CommandSet;
     std::string CmdVersion;
 
-    static PrinterInfo Fetch(UsbPrinter& dev);
+    static PrinterInfo Parse(std::string_view devId, std::string_view serial);
 
     bool IsCaptPrinter() const noexcept;
     std::string MakeUri() const;

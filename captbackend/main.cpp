@@ -39,7 +39,7 @@ static std::optional<PrinterInfo> getPrinterInfo(UsbPrinter& p) {
             << std::setw(4) << p.VendorId() << ':' << std::setw(4) << p.VendorId() << ", skipping";
         return std::nullopt;
     }
-    PrinterInfo info = PrinterInfo::Fetch(p);
+    PrinterInfo info = PrinterInfo::Parse(p.GetDeviceId(), p.GetSerial());
     p.Close();
     return info;
 }

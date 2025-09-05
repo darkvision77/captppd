@@ -8,11 +8,11 @@ static std::pair<std::string_view, std::string_view> splitKv(std::string_view st
     return {str.substr(0, delimPos), str.substr(delimPos + 1)};
 }
 
-PrinterInfo PrinterInfo::Fetch(UsbPrinter& dev) {
+PrinterInfo PrinterInfo::Parse(std::string_view devId, std::string_view serial) {
     PrinterInfo info;
-    info.DeviceId = dev.GetDeviceId();
-    info.Serial = dev.GetSerial();
-    for (const auto line : (info.DeviceId | std::views::split(';'))) {
+    info.DeviceId = devId;
+    info.Serial = serial;
+    for (const auto line : (devId | std::views::split(';'))) {
         #if defined(__GNUC__) && __GNUC__ < 12
             auto c = line | std::views::common;
             std::string str(c.begin(), c.end());
