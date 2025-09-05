@@ -133,6 +133,7 @@ int main(int argc, const char* argv[]) {
         Log::Critical() << "Failed to claim interface";
         return CUPS_BACKEND_FAILED;
     }
+    targetPrinter->Reset();
     Log::Debug() << "Device opened";
 
     UsbStreambuf streambuf(*targetPrinter);

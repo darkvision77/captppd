@@ -67,6 +67,14 @@ void UsbPrinter::Close() noexcept {
     this->handle.reset();
 }
 
+void UsbPrinter::Reset() noexcept {
+    assert(this->handle.get() != nullptr);
+    int err = libusb_reset_device(this->handle.get());
+    if (err != LIBUSB_SUCCESS) {
+        Log::Debug() << "libusb_reset_device failed: " << libusb_error_name(err) << ", ignoring";
+    }
+}
+
 std::string UsbPrinter::GetDeviceId() {
     assert(this->handle.get() != nullptr);
     unsigned char buff[1024];

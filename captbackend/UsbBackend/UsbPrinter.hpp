@@ -50,6 +50,8 @@ public:
     void Release() noexcept;
     void Close() noexcept;
 
+    void Reset() noexcept;
+
     bool DetachKernelDriver() noexcept;
     void ReattachKernelDriver() noexcept;
 
