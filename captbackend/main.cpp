@@ -50,7 +50,7 @@ static UsbPrinter* findPrinterByUri(std::vector<UsbPrinter>& printers, std::stri
         if (!info || !info->IsCaptPrinter()) {
             continue;
         }
-        if (info->MakeUri() == uri) {
+        if (info->HasUri(uri)) {
             return &p;
         }
     }

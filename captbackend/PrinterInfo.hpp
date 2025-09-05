@@ -19,6 +19,8 @@ struct PrinterInfo {
 
     bool IsCaptPrinter() const noexcept;
     std::string MakeUri() const;
+    bool HasUri(std::string_view uri) const;
+
     void Report(std::ostream& stream) const;
 };
 

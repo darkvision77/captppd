@@ -3,8 +3,8 @@
 #include <sstream>
 #include <string_view>
 
-static std::pair<std::string_view, std::string_view> splitKv(std::string_view str) noexcept {
-    std::size_t delimPos = str.find(':');
+static std::pair<std::string_view, std::string_view> splitKv(std::string_view str, char sep) noexcept {
+    std::size_t delimPos = str.find(sep);
     return {str.substr(0, delimPos), str.substr(delimPos + 1)};
 }
 
@@ -19,7 +19,7 @@ PrinterInfo PrinterInfo::Fetch(UsbPrinter& dev) {
         #else
             std::string_view str(line);
         #endif
-        auto [k, v] = splitKv(str);
+        auto [k, v] = splitKv(str, ':');
         if (k == "MFG" || k == "MANUFACTURER") {
             info.Manufacturer = v;
         } else if (k == "MDL" || k == "MODEL") {
@@ -45,6 +45,28 @@ std::string PrinterInfo::MakeUri() const {
     // otherwise CUPS will not show our backend in the web UI.
     ss << CAPTBACKEND_NAME "://" << this->Manufacturer << '/' << this->Model << "?drv=capt&serial=" << this->Serial;
     return ss.str();
+}
+
+bool PrinterInfo::HasUri(std::string_view uri) const {
+    std::ostringstream ss;
+    ss << CAPTBACKEND_NAME "://" << this->Manufacturer << '/' << this->Model << "?";
+    const std::string_view prefix = ss.view();
+    if (!uri.starts_with(prefix)) {
+        return false;
+    }
+    for (const auto line : (uri.substr(prefix.size()) | std::views::split('&'))) {
+        #if defined(__GNUC__) && __GNUC__ < 12
+            auto c = line | std::views::common;
+            std::string str(c.begin(), c.end());
+        #else
+            std::string_view str(line);
+        #endif
+        auto [k, v] = splitKv(str, '=');
+        if (k == "serial" && v == this->Serial) {
+            return true;
+        }
+    }
+    return false;
 }
 
 // device-class
