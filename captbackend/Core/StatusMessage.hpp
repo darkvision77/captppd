@@ -4,17 +4,17 @@
 #include <string_view>
 #include <libcapt/Protocol/ExtendedStatus.hpp>
 
-const std::string_view MsgReady = "Ready";
-const std::string_view MsgNotReady = "Not ready";
-const std::string_view MsgUnknownFatal = "Unknown fatal error";
-const std::string_view MsgDoorOpen = "Door open";
-const std::string_view MsgJam = "Paper jam";
-const std::string_view MsgNoCartridge = "No cartridge";
-const std::string_view MsgNoPaper = "Out of paper";
-const std::string_view MsgWaiting = "Waiting";
-const std::string_view MsgServiceCall = "Engine fault";
-const std::string_view MsgPrinting = "Printing";
-const std::string_view MsgCleaning = "Cleaning";
+inline constexpr std::string_view MsgReady = "Ready";
+inline constexpr std::string_view MsgNotReady = "Not ready";
+inline constexpr std::string_view MsgUnknownFatal = "Unknown fatal error";
+inline constexpr std::string_view MsgDoorOpen = "Door open";
+inline constexpr std::string_view MsgJam = "Paper jam";
+inline constexpr std::string_view MsgNoCartridge = "No cartridge";
+inline constexpr std::string_view MsgNoPaper = "Out of paper";
+inline constexpr std::string_view MsgWaiting = "Waiting";
+inline constexpr std::string_view MsgServiceCall = "Engine fault";
+inline constexpr std::string_view MsgPrinting = "Printing";
+inline constexpr std::string_view MsgCleaning = "Cleaning";
 
 constexpr std::string_view StatusMessage(Capt::Protocol::ExtendedStatus status) noexcept {
     using namespace Capt::Protocol;
