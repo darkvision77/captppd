@@ -4,9 +4,20 @@
 
 using namespace Capt::Protocol;
 
-StateReporter::StateReporter(std::ostream& stream) : stream(stream) {}
+StateReporter::StateReporter(std::ostream& stream) noexcept : stream(stream) {}
 
-void StateReporter::Update(const ExtendedStatus& status) {
+void StateReporter::Update(ExtendedStatus status) {
+    bool serviceCall = (status.Engine & EngineReadyStatus::SERVICE_CALL) != 0;
+    bool fatal = status.FatalError();
+    if (serviceCall || fatal) {
+        this->Clear();
+        this->SetReason("motor-failure-error", serviceCall);
+        this->SetReason("unknown-error", fatal && !serviceCall);
+        return;
+    }
+    this->SetReason("motor-failure-error", false);
+    this->SetReason("unknown-error", false);
+
     this->SetReason("media-empty-error", (status.Engine & EngineReadyStatus::NO_PRINT_PAPER) != 0);
     this->SetReason("media-needed-error", (status.Engine & EngineReadyStatus::NO_PRINT_PAPER) != 0);
     this->SetReason("media-jam-error", (status.Engine & EngineReadyStatus::JAM) != 0);
@@ -15,11 +26,8 @@ void StateReporter::Update(const ExtendedStatus& status) {
     this->SetReason("door-open-error", (status.Engine & EngineReadyStatus::DOOR_OPEN) != 0);
 
     bool waiting = (status.Engine & EngineReadyStatus::WAITING) != 0
-        | (status.Engine & EngineReadyStatus::TEST_PRINTING) != 0
         | (status.Controller & ControllerStatus::ENGINE_RESET_IN_PROGRESS) != 0;
-    this->SetReason("testing", waiting);
-
-    this->SetReason("motor-failure-error", (status.Engine & EngineReadyStatus::SERVICE_CALL) != 0);
+    this->SetReason("resuming", waiting);
 }
 
 void StateReporter::SetReason(std::string_view reason, bool set) {

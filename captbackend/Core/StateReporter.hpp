@@ -11,13 +11,12 @@ private:
     std::ostream& stream;
     std::unordered_set<std::string_view> reasons;
 public:
-    explicit StateReporter(std::ostream& stream);
-
+    explicit StateReporter(std::ostream& stream) noexcept;
     inline ~StateReporter() {
         this->Clear();
     }
 
-    void Update(const Capt::Protocol::ExtendedStatus& status);
+    void Update(Capt::Protocol::ExtendedStatus status);
     void SetReason(std::string_view reason, bool set);
     void Clear();
 
