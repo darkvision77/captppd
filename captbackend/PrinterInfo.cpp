@@ -12,12 +12,12 @@ PrinterInfo PrinterInfo::Parse(std::string_view devId, std::string_view serial) 
     PrinterInfo info;
     info.DeviceId = devId;
     info.Serial = serial;
-    for (const auto line : (devId | std::views::split(';'))) {
+    for (const auto part : (devId | std::views::split(';'))) {
         #if defined(__GNUC__) && __GNUC__ < 12
-            auto c = line | std::views::common;
+            auto c = part | std::views::common;
             std::string str(c.begin(), c.end());
         #else
-            std::string_view str(line);
+            std::string_view str(part);
         #endif
         auto [k, v] = splitKv(str, ':');
         if (k == "MFG" || k == "MANUFACTURER") {
@@ -54,12 +54,12 @@ bool PrinterInfo::HasUri(std::string_view uri) const {
     if (!uri.starts_with(prefix)) {
         return false;
     }
-    for (const auto line : (uri.substr(prefix.size()) | std::views::split('&'))) {
+    for (const auto part : (uri.substr(prefix.size()) | std::views::split('&'))) {
         #if defined(__GNUC__) && __GNUC__ < 12
-            auto c = line | std::views::common;
+            auto c = part | std::views::common;
             std::string str(c.begin(), c.end());
         #else
-            std::string_view str(line);
+            std::string_view str(part);
         #endif
         auto [k, v] = splitKv(str, '=');
         if (k == "serial" && v == this->Serial) {
