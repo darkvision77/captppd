@@ -4,33 +4,53 @@
 #include <string_view>
 #include <libcapt/Protocol/ExtendedStatus.hpp>
 
-constexpr std::string_view StatusMessage(const Capt::Protocol::ExtendedStatus& status) noexcept {
+const std::string_view MsgReady = "Ready";
+const std::string_view MsgNotReady = "Not ready";
+const std::string_view MsgUnknownFatal = "Unknown fatal error";
+const std::string_view MsgDoorOpen = "Door open";
+const std::string_view MsgJam = "Paper jam";
+const std::string_view MsgNoCartridge = "No cartridge";
+const std::string_view MsgNoPaper = "Out of paper";
+const std::string_view MsgWaiting = "Waiting";
+const std::string_view MsgServiceCall = "Engine fault";
+const std::string_view MsgPrinting = "Printing";
+const std::string_view MsgCleaning = "Cleaning";
+
+constexpr std::string_view StatusMessage(Capt::Protocol::ExtendedStatus status) noexcept {
     using namespace Capt::Protocol;
     if ((status.Engine & EngineReadyStatus::SERVICE_CALL) != 0) {
-        return "Engine fault";
+        return MsgServiceCall;
     }
     if (status.FatalError()) {
-        return "Unknown fatal error";
+        return MsgUnknownFatal;
     }
     bool waiting = (status.Engine & EngineReadyStatus::WAITING) != 0
-        | (status.Engine & EngineReadyStatus::TEST_PRINTING) != 0
         | (status.Controller & ControllerStatus::ENGINE_RESET_IN_PROGRESS) != 0;
     if (waiting) {
-        return "Waiting";
+        return MsgWaiting;
     }
     if ((status.Engine & EngineReadyStatus::DOOR_OPEN) != 0) {
-        return "Door open";
-    }
-    if ((status.Engine & EngineReadyStatus::NO_CARTRIDGE) != 0) {
-        return "No cartridge";
+        return MsgDoorOpen;
     }
     if ((status.Engine & EngineReadyStatus::JAM) != 0) {
-        return "Paper jam";
+        return MsgJam;
+    }
+    if ((status.Engine & EngineReadyStatus::NO_CARTRIDGE) != 0) {
+        return MsgNoCartridge;
     }
     if ((status.Engine & EngineReadyStatus::NO_PRINT_PAPER) != 0) {
-        return "Out of paper";
+        return MsgNoPaper;
     }
-    return "Ready";
+    if ((status.Engine & EngineReadyStatus::CLEANING) != 0) {
+        return MsgCleaning;
+    }
+    if (status.IsPrinting() || ((status.Engine & EngineReadyStatus::TEST_PRINTING) != 0)) {
+        return MsgPrinting;
+    }
+    if (!status.Ready()) {
+        return MsgNotReady;
+    }
+    return MsgReady;
 }
 
 #endif
