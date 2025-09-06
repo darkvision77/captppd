@@ -11,11 +11,11 @@ void StateReporter::Update(ExtendedStatus status) {
     bool fatal = status.FatalError();
     if (serviceCall || fatal) {
         this->Clear();
-        this->SetReason("motor-failure-error", serviceCall);
+        this->SetReason("other-error", serviceCall);
         this->SetReason("unknown-error", fatal && !serviceCall);
         return;
     }
-    this->SetReason("motor-failure-error", false);
+    this->SetReason("other-error", false);
     this->SetReason("unknown-error", false);
 
     this->SetReason("media-empty-error", (status.Engine & EngineReadyStatus::NO_PRINT_PAPER) != 0);

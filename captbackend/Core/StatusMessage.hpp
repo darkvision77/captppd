@@ -12,7 +12,7 @@ inline constexpr std::string_view MsgJam = "Paper jam";
 inline constexpr std::string_view MsgNoCartridge = "No cartridge";
 inline constexpr std::string_view MsgNoPaper = "Out of paper";
 inline constexpr std::string_view MsgWaiting = "Waiting";
-inline constexpr std::string_view MsgServiceCall = "Engine fault";
+inline constexpr std::string_view MsgServiceCall = "Service call";
 inline constexpr std::string_view MsgPrinting = "Printing";
 inline constexpr std::string_view MsgCleaning = "Cleaning";
 

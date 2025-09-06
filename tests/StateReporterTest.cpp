@@ -165,7 +165,7 @@ TEST_F(StateReporterTest, Basic) {
     EXPECT_THAT(Parser.Reasons, testing::UnorderedElementsAre("media-jam-error"));
 
     ResetUpdate({.Engine = EngineReadyStatus::SERVICE_CALL});
-    EXPECT_THAT(Parser.Reasons, testing::UnorderedElementsAre("motor-failure-error"));
+    EXPECT_THAT(Parser.Reasons, testing::UnorderedElementsAre("other-error"));
 }
 
 TEST_F(StateReporterTest, Multiple) {
@@ -184,14 +184,14 @@ TEST_F(StateReporterTest, FatalOverlap) {
     EXPECT_THAT(Parser.Reasons, testing::UnorderedElementsAre("unknown-error"));
 
     ResetUpdate({.Basic = BasicStatus::ERROR_BIT, .Engine = EngineReadyStatus::SERVICE_CALL});
-    EXPECT_THAT(Parser.Reasons, testing::UnorderedElementsAre("motor-failure-error"));
+    EXPECT_THAT(Parser.Reasons, testing::UnorderedElementsAre("other-error"));
 
     ResetUpdate({.Basic = BasicStatus::ERROR_BIT, .Engine = EngineReadyStatus::SERVICE_CALL | EngineReadyStatus::JAM});
-    EXPECT_THAT(Parser.Reasons, testing::UnorderedElementsAre("motor-failure-error"));
+    EXPECT_THAT(Parser.Reasons, testing::UnorderedElementsAre("other-error"));
 
     Update({.Engine = EngineReadyStatus::JAM});
     EXPECT_THAT(Parser.Reasons, testing::UnorderedElementsAre("media-jam-error"));
 
     Update({.Engine = EngineReadyStatus::SERVICE_CALL | EngineReadyStatus::JAM});
-    EXPECT_THAT(Parser.Reasons, testing::UnorderedElementsAre("motor-failure-error"));
+    EXPECT_THAT(Parser.Reasons, testing::UnorderedElementsAre("other-error"));
 }
