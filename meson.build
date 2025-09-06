@@ -24,16 +24,14 @@ int main() { std::stop_token token; return 0; }
 
 cups_config = find_program('cups-config')
 
-cups_backend_dir = get_option('cupsbackenddir')
-if cups_backend_dir == ''
+cups_serverbin = get_option('cupsserverbin')
+if cups_serverbin == ''
     cups_serverbin = run_command(cups_config, '--serverbin', check: true).stdout().strip()
-    cups_backend_dir = cups_serverbin / 'backend'
 endif
 
-cups_ppd_dir = get_option('cupsppddir')
-if cups_ppd_dir == ''
+cups_datadir = get_option('cupsdatadir')
+if cups_datadir == ''
     cups_datadir = run_command(cups_config, '--datadir', check: true).stdout().strip()
-    cups_ppd_dir = cups_datadir / 'model'
 endif
 
 cups_dep = dependency('cups')
@@ -49,10 +47,11 @@ add_project_arguments(
 
 summary({
     'Backend name': get_option('backendname'),
-    'CUPS backend directory': cups_backend_dir,
-    'CUPS PPD directory': cups_ppd_dir,
+    'CUPS bin directory': cups_serverbin,
+    'CUPS data directory': cups_datadir,
 }, section: 'Configuration')
 
 subdir('captbackend')
 subdir('ppd')
+subdir('dist')
 subdir('tests')

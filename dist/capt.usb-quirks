@@ -1,0 +1,11 @@
+# Canon, Inc. LBP810 Printer
+0x04a9 0x260a blacklist
+
+# Canon, Inc. LBP1120 Printer
+0x04a9 0x262b blacklist
+
+# Canon, Inc. LBP1210 Printer
+0x04a9 0x2617 blacklist
+
+# Canon, Inc. LBP3200 Printer
+0x04a9 0x2636 blacklist

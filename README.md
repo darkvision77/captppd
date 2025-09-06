@@ -45,8 +45,15 @@ meson compile -C build
 ```
 
 ### Install
+This command will install the backend, PPD files, and quirks
+that prevent Canon CAPT v1 printers from being detected by the CUPS USB backend:
 ```sh
 meson install -C build
+```
+
+If you don't want to blacklist Canon CAPT v1 printers for the CUPS USB backend, you can use:
+```sh
+meson install -C build --tags=base
 ```
 
 ## Usage

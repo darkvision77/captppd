@@ -17,5 +17,6 @@ custom_target(
         '@INPUT@'
     ],
     install: true,
-    install_dir: cups_ppd_dir,
+    install_dir: cups_datadir / 'model',
+    install_tag: 'base',
 )

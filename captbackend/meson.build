@@ -28,5 +28,6 @@ executable(
     dependencies: [captbackend_dep],
     install: true,
     install_mode: ['r-x------', 'root', 'root'],
-    install_dir: cups_backend_dir,
+    install_dir: cups_serverbin / 'backend',
+    install_tag: 'base',
 )
