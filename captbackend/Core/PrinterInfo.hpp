@@ -1,5 +1,5 @@
-#ifndef _CAPTBACKEND_PRINTER_INFO_HPP_
-#define _CAPTBACKEND_PRINTER_INFO_HPP_
+#ifndef _CAPTBACKEND_CORE_PRINTER_INFO_HPP_
+#define _CAPTBACKEND_CORE_PRINTER_INFO_HPP_
 
 #include <ostream>
 #include <string>

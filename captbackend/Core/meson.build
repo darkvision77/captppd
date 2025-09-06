@@ -3,4 +3,5 @@ sources += files(
     'CupsRasterStreambuf.cpp',
     'StateReporter.cpp',
     'Log.cpp',
+    'PrinterInfo.cpp',
 )

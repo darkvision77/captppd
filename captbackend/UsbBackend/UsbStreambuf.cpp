@@ -40,7 +40,7 @@ int_type UsbStreambuf::underflow() {
     );
     if (err != LIBUSB_SUCCESS) {
         Log::Debug() << "UsbStreambuf::underflow(): libusb_bulk_transfer failed: " << libusb_error_name(err);
-        throw UsbError(err);
+        throw UsbError("read failed", err);
     }
     assert(transferred >= 0);
     Log::Debug() << "Received " << transferred << " from device";
@@ -65,7 +65,7 @@ int UsbStreambuf::sync() {
         );
         if (err != LIBUSB_SUCCESS) {
             Log::Debug() << "UsbStreambuf::sync(): libusb_bulk_transfer failed: " << libusb_error_name(err);
-            throw UsbError(err);
+            throw UsbError("write failed", err);
         }
         assert(transferred >= 0 && transferred <= count);
         Log::Debug() << "Sent " << transferred << " bytes to device";

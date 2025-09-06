@@ -72,7 +72,7 @@ static std::optional<libusb_interface_descriptor> findPrinterAlt(libusb_config_d
 
 UsbBackend::UsbBackend() noexcept : context(nullptr, libusb_exit) {}
 
-bool UsbBackend::Init() noexcept {
+void UsbBackend::Init() {
     libusb_context* ctx;
     #if defined(LIBUSB_API_VERSION) && LIBUSB_API_VERSION >= 0x0100010A
     int err = libusb_init_context(&ctx, nullptr, 0);
@@ -81,16 +81,15 @@ bool UsbBackend::Init() noexcept {
     #endif
     if (err != LIBUSB_SUCCESS) {
         Log::Debug() << "libusb_init_context failed: " << libusb_error_name(err);
-        return false;
+        throw UsbError("init failed", err);
     }
     this->context.reset(ctx);
-    return true;
 }
 
 std::vector<UsbPrinter> UsbBackend::GetPrinters() {
     auto [devs, count] = getDeviceList(this->context.get());
     if (count < 0) {
-        throw UsbError(count);
+        throw UsbError("failed to enumerate devices", count);
     }
     std::vector<UsbPrinter> printers;
     for (ssize_t i = 0; i < count; i++) {

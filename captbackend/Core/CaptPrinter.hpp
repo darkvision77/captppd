@@ -12,6 +12,7 @@ private:
     StateReporter& reporter;
 public:
     explicit CaptPrinter(std::iostream& stream, StateReporter& reporter) noexcept;
+    virtual ~CaptPrinter();
 
     Capt::Protocol::ExtendedStatus GetStatus() override;
 

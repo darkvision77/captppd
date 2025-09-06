@@ -1,5 +1,4 @@
 sources = files(
-    'PrinterInfo.cpp',
     'CmdClean.cpp',
     'CmdPrint.cpp',
 )

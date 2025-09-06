@@ -13,7 +13,7 @@ private:
 public:
     UsbBackend() noexcept;
 
-    bool Init() noexcept;
+    void Init();
     std::vector<UsbPrinter> GetPrinters();
 };
 

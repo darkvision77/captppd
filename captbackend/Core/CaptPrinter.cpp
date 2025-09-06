@@ -8,6 +8,14 @@ using namespace std::literals::chrono_literals;
 CaptPrinter::CaptPrinter(std::iostream& stream, StateReporter& reporter) noexcept
     : Capt::BasicCaptPrinter(stream), reporter(reporter) {}
 
+CaptPrinter::~CaptPrinter() {
+    if (!this->stream.good()) {
+        return;
+    }
+    this->GoOffline();
+    this->ReleaseUnit();
+}
+
 Capt::Protocol::ExtendedStatus CaptPrinter::GetStatus() {
     Capt::Protocol::ExtendedStatus status = this->Capt::BasicCaptPrinter::GetStatus();
     this->reporter.Update(status);
