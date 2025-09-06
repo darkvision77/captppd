@@ -64,12 +64,26 @@ void UsbPrinter::detachKernelDriver() {
     }
 }
 
+void UsbPrinter::setConfig(uint8_t value) {
+    assert(this->handle.get() != nullptr);
+    if (this->desc.bNumConfigurations == 1) {
+        return;
+    }
+    int err = libusb_set_configuration(this->handle.get(), value);
+    if (err != LIBUSB_SUCCESS) {
+        Log::Debug() << "libusb_set_configuration failed: " << libusb_error_name(err);
+        throw UsbError("failed to set device configuration", err);
+    }
+    Log::Debug() << "Device configuration set to " << value;
+}
+
 void UsbPrinter::Open() {
     int err = this->open();
     if (err != LIBUSB_SUCCESS) {
         throw UsbError("failed to open device", err);
     }
     this->detachKernelDriver();
+    this->setConfig(this->config->bConfigurationValue);
     this->claim();
 }
 

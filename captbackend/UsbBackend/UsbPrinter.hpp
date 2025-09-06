@@ -32,6 +32,7 @@ private:
     void reset() noexcept;
     void release() noexcept;
     void reattachKernelDriver() noexcept;
+    void setConfig(uint8_t value);
 
     std::string getStringDescriptor(uint8_t idx);
     std::string getDeviceId();
