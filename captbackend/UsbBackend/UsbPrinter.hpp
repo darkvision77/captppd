@@ -36,7 +36,6 @@ private:
 
     std::string getStringDescriptor(uint8_t idx);
     std::string getDeviceId();
-    std::string getSerial();
 public:
     explicit UsbPrinter(
         libusb_device_ptr dev,
@@ -49,18 +48,18 @@ public:
 
     UsbPrinter(UsbPrinter&& other) noexcept = default;
 
-    inline uint16_t VendorId() const noexcept {
+    [[nodiscard]] inline uint16_t VendorId() const noexcept {
         return this->desc.idVendor;
     }
 
-    inline uint16_t ProductId() const noexcept {
+    [[nodiscard]] inline uint16_t ProductId() const noexcept {
         return this->desc.idProduct;
     }
 
     void Open();
     void Close() noexcept;
 
-    std::optional<PrinterInfo> GetPrinterInfo();
+    [[nodiscard]] std::optional<PrinterInfo> GetPrinterInfo();
 };
 
 #endif

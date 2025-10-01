@@ -6,16 +6,16 @@
 #include <libusb.h>
 #include <optional>
 
-static void freeDeviceList(libusb_device** devs) {
-    libusb_free_device_list(devs, false);
-}
+typedef std::unique_ptr<libusb_device*, void(*)(libusb_device**)> libusb_device_list;
 
-typedef std::unique_ptr<libusb_device*, decltype(&freeDeviceList)> libusb_device_list;
-
-static std::pair<libusb_device_list, ssize_t> getDeviceList(libusb_context* ctx) {
+static inline std::pair<libusb_device_list, ssize_t> getDeviceList(libusb_context* ctx) {
     libusb_device** devs;
     ssize_t count = libusb_get_device_list(ctx, &devs);
-    return {libusb_device_list(devs, freeDeviceList), count};
+    return {libusb_device_list(devs, [](auto devs) { libusb_free_device_list(devs, false); }), count};
+}
+
+static inline bool isPrinter(const libusb_interface_descriptor& alt) noexcept {
+    return alt.bInterfaceClass == LIBUSB_CLASS_PRINTER && alt.bInterfaceSubClass == 1 && alt.bInterfaceProtocol == 2;
 }
 
 static std::vector<libusb_config_descriptor_ptr> getConfigs(libusb_device* dev, const libusb_device_descriptor& desc) {
@@ -32,10 +32,6 @@ static std::vector<libusb_config_descriptor_ptr> getConfigs(libusb_device* dev, 
         configs.emplace_back(libusb_config_descriptor_ptr(conf, libusb_free_config_descriptor));
     }
     return configs;
-}
-
-static bool isPrinter(const libusb_interface_descriptor& alt) noexcept {
-    return alt.bInterfaceClass == LIBUSB_CLASS_PRINTER && alt.bInterfaceSubClass == 1 && alt.bInterfaceProtocol == 2;
 }
 
 static std::optional<std::pair<uint8_t, uint8_t>> getRWEndpoints(const libusb_interface_descriptor& alt) noexcept {

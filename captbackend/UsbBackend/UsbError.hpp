@@ -10,7 +10,7 @@ public:
 
 	explicit UsbError(std::string message, int errcode) noexcept : std::runtime_error(message), Errcode(errcode) {}
 
-	const char* StrErrcode() const noexcept {
+	[[nodiscard]] const char* StrErrcode() const noexcept {
 		return libusb_strerror(this->Errcode);
 	}
 };

@@ -1,13 +1,11 @@
-sources = files(
-    'CmdClean.cpp',
-    'CmdPrint.cpp',
-)
+sources = files()
 
 main_sources = files(
     'main.cpp',
 )
 
 subdir('Core')
+subdir('Cups')
 subdir('UsbBackend')
 
 captbackend_lib = static_library(

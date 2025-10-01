@@ -15,7 +15,7 @@ private:
 
     unsigned timeoutMs;
 
-    int_type overflow(int_type c) override;
+    int_type overflow(int_type c = traits_type::eof()) override;
     int_type underflow() override;
 
     int sync() override;

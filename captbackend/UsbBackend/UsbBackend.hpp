@@ -14,7 +14,7 @@ public:
     UsbBackend() noexcept;
 
     void Init();
-    std::vector<UsbPrinter> GetPrinters();
+    [[nodiscard]] std::vector<UsbPrinter> GetPrinters();
 };
 
 #endif

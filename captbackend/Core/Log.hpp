@@ -11,10 +11,13 @@ namespace Log {
         bool terminate = true;
     public:
         explicit StreamTerminator(std::ostream& stream) noexcept;
-        StreamTerminator(StreamTerminator&& other) noexcept;
-        StreamTerminator(const StreamTerminator&) = delete;
-
         ~StreamTerminator();
+
+        StreamTerminator(const StreamTerminator&) = delete;
+        StreamTerminator& operator=(const StreamTerminator&) = delete;
+
+        StreamTerminator(StreamTerminator&& other) noexcept;
+        StreamTerminator& operator=(StreamTerminator&& other) = delete;
 
         template<typename T>
         friend StreamTerminator operator<<(StreamTerminator&& stream, const T& val) {

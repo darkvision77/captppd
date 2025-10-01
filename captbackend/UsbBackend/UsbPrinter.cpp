@@ -21,7 +21,7 @@ UsbPrinter::~UsbPrinter() noexcept {
 
 int UsbPrinter::open() noexcept {
     if (this->handle.get() != nullptr) {
-        return true;
+        return LIBUSB_SUCCESS;
     }
     libusb_device_handle* handle;
     int err = libusb_open(this->dev.get(), &handle);
@@ -161,10 +161,6 @@ std::string UsbPrinter::getDeviceId() {
     return std::string(reinterpret_cast<char*>(buff+2), length-2);
 }
 
-std::string UsbPrinter::getSerial() {
-    return this->getStringDescriptor(this->desc.iSerialNumber);
-}
-
 std::optional<PrinterInfo> UsbPrinter::GetPrinterInfo() {
     bool opened = this->handle.get() == nullptr;
     if (opened) {
@@ -176,7 +172,8 @@ std::optional<PrinterInfo> UsbPrinter::GetPrinterInfo() {
             return std::nullopt;
         }
     }
-    PrinterInfo info = PrinterInfo::Parse(this->getDeviceId(), this->getSerial());
+    std::string serial = this->getStringDescriptor(this->desc.iSerialNumber);
+    PrinterInfo info = PrinterInfo::Parse(this->getDeviceId(), serial);
     if (opened) {
         this->Close();
     }

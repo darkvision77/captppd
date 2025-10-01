@@ -1,18 +1,17 @@
+#include "Core/RasterError.hpp"
 #include "Core/StateReporter.hpp"
 #include "Core/CaptPrinter.hpp"
 #include "Core/Log.hpp"
-#include "Cmds.hpp"
 #include "Core/PrinterInfo.hpp"
+#include "Cups/CupsRasterStreambuf.hpp"
 #include "UsbBackend/UsbBackend.hpp"
 #include "UsbBackend/UsbError.hpp"
 #include "UsbBackend/UsbPrinter.hpp"
 #include "UsbBackend/UsbStreambuf.hpp"
 #include <cassert>
 #include <csignal>
-#include <cstdio>
 #include <exception>
 #include <iostream>
-#include <memory>
 #include <optional>
 #include <stop_token>
 #include <cups/backend.h>
@@ -20,7 +19,6 @@
 #include <string_view>
 #include <thread>
 #include <vector>
-#include <unistd.h>
 
 using namespace std::literals::chrono_literals;
 
@@ -132,24 +130,30 @@ int main(int argc, const char* argv[]) {
         printer.ReserveUnit();
         Log::Info() << "Unit reserved";
 
+        bool success;
         if (*contentType == "application/vnd.cups-command") {
-            return CmdClean(stopToken, printer);
-        }
-        assert(*contentType == "application/vnd.cups-raster");
-
-        if (argc == 7) {
-            std::unique_ptr<FILE, decltype(&fclose)> file(fopen(argv[6], "rb"), fclose);
-            if (file.get() == nullptr) {
-                Log::Critical() << "Failed to open input file";
+            success = printer.Clean(stopToken);
+        } else {
+            assert(*contentType == "application/vnd.cups-raster");
+            CupsRasterStreambuf cupsRaster;
+            if (!cupsRaster.Open(argc == 7 ? argv[6] : nullptr)) {
+                Log::Critical() << "Failed to open raster stream";
                 return CUPS_BACKEND_FAILED;
             }
-            return CmdPrint(stopToken, reporter, printer, fileno(file.get()));
+            success = printer.Print(stopToken, cupsRaster);
         }
-        return CmdPrint(stopToken, reporter, printer, STDIN_FILENO);
+
+        Log::Debug() << "Releasing unit...";
+        printer.GoOffline();
+        printer.ReleaseUnit();
+        Log::Debug() << "Unit released";
+        return success ? CUPS_BACKEND_OK : CUPS_BACKEND_FAILED;
     } catch (const Capt::UnexpectedBehaviourError& e) {
         Log::Critical() << "Protocol fault: " << e.what();
     } catch (const UsbError& e) {
         Log::Critical() << "USB backend error: " << e.what() << " (" << e.StrErrcode() << ')';
+    } catch (const RasterError& e) {
+        Log::Critical() << "Raster error: " << e.what();
     } catch (const std::exception& e) {
         Log::Critical() << "Unhandled exception: " << e.what();
     }

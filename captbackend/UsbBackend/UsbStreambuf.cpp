@@ -11,18 +11,16 @@ using int_type = UsbStreambuf::int_type;
 UsbStreambuf::UsbStreambuf(UsbPrinter& printer, std::size_t buffSize, unsigned timeoutMs)
     : printer(printer), rbuff(buffSize), wbuff(buffSize), timeoutMs(timeoutMs) {
     char_type* wstart = this->wbuff.data();
-    char_type* wend = wstart + this->wbuff.size();
+    char_type* wend = wstart + this->wbuff.size() - 1;
     this->setp(wstart, wend);
 }
 
 int_type UsbStreambuf::overflow(int_type c) {
-    if (c == traits_type::eof()) {
-        return traits_type::eof();
+    if (!traits_type::eq_int_type(c, traits_type::eof())) {
+        *this->pptr() = traits_type::to_char_type(c);
+        this->pbump(1);
     }
-    this->sync();
-    *this->pptr() = traits_type::to_char_type(c);
-    this->pbump(1);
-    return c;
+    return this->sync() == 0 ? traits_type::not_eof(c) : traits_type::eof();
 }
 
 int_type UsbStreambuf::underflow() {
@@ -49,12 +47,8 @@ int_type UsbStreambuf::underflow() {
 }
 
 int UsbStreambuf::sync() {
-    if (this->pptr() == this->pbase()) {
-        return 0;
-    }
     assert(this->printer.handle.get() != nullptr);
     std::ptrdiff_t count = this->pptr() - this->pbase();
-    int result = count;
 
     while (count > 0) {
         int transferred;
@@ -72,7 +66,7 @@ int UsbStreambuf::sync() {
         count -= transferred;
     }
 
-    this->pbump(-result);
+    this->setp(this->pbase(), this->epptr());
     assert(this->pptr() == this->pbase());
-    return result;
+    return 0;
 }

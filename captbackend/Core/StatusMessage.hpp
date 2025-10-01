@@ -16,7 +16,7 @@ inline constexpr std::string_view MsgServiceCall = "Service call";
 inline constexpr std::string_view MsgPrinting = "Printing";
 inline constexpr std::string_view MsgCleaning = "Cleaning";
 
-constexpr std::string_view StatusMessage(Capt::Protocol::ExtendedStatus status) noexcept {
+[[nodiscard]] constexpr std::string_view StatusMessage(Capt::Protocol::ExtendedStatus status) noexcept {
     using namespace Capt::Protocol;
     if ((status.Engine & EngineReadyStatus::SERVICE_CALL) != 0) {
         return MsgServiceCall;

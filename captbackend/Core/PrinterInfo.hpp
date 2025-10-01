@@ -15,11 +15,11 @@ struct PrinterInfo {
     std::string CommandSet;
     std::string CmdVersion;
 
-    static PrinterInfo Parse(std::string_view devId, std::string_view serial);
+    [[nodiscard]] static PrinterInfo Parse(std::string_view devId, std::string_view serial);
 
-    bool IsCaptPrinter() const noexcept;
-    std::string MakeUri() const;
-    bool HasUri(std::string_view uri) const;
+    [[nodiscard]] bool IsCaptPrinter() const noexcept;
+    [[nodiscard]] std::string MakeUri() const;
+    [[nodiscard]] bool HasUri(std::string_view uri) const;
 
     void Report(std::ostream& stream) const;
 };
