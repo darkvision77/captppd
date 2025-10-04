@@ -20,6 +20,7 @@ struct Status {
     constexpr ExtendedStatus Make() const noexcept {
         return ExtendedStatus{
             .Basic = static_cast<BasicStatus>(this->Basic),
+            .Changed = 0,
             .Aux = static_cast<AuxStatus>(this->Aux),
             .Controller = static_cast<ControllerStatus>(this->Controller),
             .PaperAvailableBits = 0,
