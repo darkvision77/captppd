@@ -1,4 +1,5 @@
 #include "Core/PrinterInfo.hpp"
+#include "Config.hpp"
 #include <gtest/gtest.h>
 #include <string_view>
 #include <utility>

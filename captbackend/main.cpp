@@ -8,6 +8,7 @@
 #include "UsbBackend/UsbError.hpp"
 #include "UsbBackend/UsbPrinter.hpp"
 #include "UsbBackend/UsbStreambuf.hpp"
+#include "Config.hpp"
 #include <cassert>
 #include <csignal>
 #include <exception>
@@ -16,6 +17,7 @@
 #include <stop_token>
 #include <cups/backend.h>
 #include <libcapt/UnexpectedBehaviourError.hpp>
+#include <libcapt/Version.hpp>
 #include <string_view>
 #include <thread>
 #include <vector>
@@ -78,8 +80,8 @@ int main(int argc, const char* argv[]) {
         return CUPS_BACKEND_FAILED;
     }
 
-    Log::Debug() << CAPTBACKEND_NAME " version " CAPTBACKEND_VERSION;
-    Log::Debug() << "libcapt version " LIBCAPT_VERSION;
+    Log::Debug() << CAPTBACKEND_NAME " version " CAPTBACKEND_VERSION_STRING;
+    Log::Debug() << "libcapt version " LIBCAPT_VERSION_STRING;
 
     try {
         StateReporter reporter(std::cerr);

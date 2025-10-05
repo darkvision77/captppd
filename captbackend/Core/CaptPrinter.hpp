@@ -8,7 +8,7 @@
 #include <iostream>
 #include <stop_token>
 
-class CaptPrinter : public Capt::BasicCaptPrinter {
+class CaptPrinter : public Capt::BasicCaptPrinter<std::stop_token> {
 private:
     StateReporter& reporter;
 public:

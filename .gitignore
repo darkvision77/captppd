@@ -1,9 +1,9 @@
 build/
 .cache/
 __pycache__/
+.vscode/
 
-subprojects/.wraplock
-subprojects/libcapt
+captbackend/Config.hpp
 
 # Prerequisites
 *.d

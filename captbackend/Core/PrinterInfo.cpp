@@ -1,4 +1,5 @@
 #include "PrinterInfo.hpp"
+#include "Config.hpp"
 #include <ranges>
 #include <sstream>
 #include <string_view>

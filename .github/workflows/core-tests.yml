@@ -7,10 +7,10 @@ jobs:
       fail-fast: false
       matrix:
         os:
-          - ubuntu-22.04
-          - ubuntu-24.04
-    name: ${{ matrix.os }}
-    runs-on: ${{ matrix.os }}
+          - "22.04"
+          - "24.04"
+    name: Ubuntu ${{ matrix.os }}
+    runs-on: ubuntu-${{ matrix.os }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -18,30 +18,22 @@ jobs:
       - name: Install apt packages
         run: |
           sudo apt-get update -y --fix-missing
-          sudo apt-get install -y python3-pip gcc pkg-config ninja-build cups cups-ppdc libcups2-dev libusb-1.0-0-dev
-
-      - name: Install meson
-        run: sudo pip3 install --upgrade meson
-
-      - name: Install gtest
-        run: |
-          mkdir -p subprojects
-          meson wrap install gtest
+          sudo apt-get install -y gcc pkg-config ninja-build cups cups-ppdc libcups2-dev libusb-1.0-0-dev cmake
 
       - name: Start CUPS service
         run: sudo systemctl start cups
 
       - name: Configure
-        run: meson setup build -Db_sanitize=address,undefined -Dtests=enabled
+        run: cmake -G Ninja -S. -B build -DCAPTPPD_SANITIZE=ON -DCAPTPPD_BUILD_TESTS=ON
 
       - name: Compile
-        run: meson compile -C build
+        run: cmake --build build -v -j
 
       - name: Run tests
-        run: meson test -C build --print-errorlogs --suite=captppd
+        run: ctest --test-dir build --output-on-failure -j
 
       - name: Install
-        run: sudo meson install -C build
+        run: sudo cmake --install build
 
       - name: Verify install with lpadmin
         run: sudo lpadmin -p LBP3200 -E -v 'captusb://Canon/LBP3200?serial=00000000' -m LBP3200CAPTPPD.ppd || (cat /var/log/cups/error_log && false)
@@ -67,13 +59,12 @@ jobs:
           set -eou pipefail
           export GITHUB_ACTIONS=true
           apt-get update -y --fix-missing
-          apt-get install -y python3-pip gcc libgtest-dev libgmock-dev pkg-config ninja-build cups cups-ppdc libcups2-dev libusb-1.0-0-dev git
-          pip3 install --break-system-packages --upgrade meson
+          apt-get install -y gcc libgtest-dev libgmock-dev pkg-config ninja-build cups cups-ppdc libcups2-dev libusb-1.0-0-dev git cmake
           /usr/sbin/cupsd
-          meson setup build -Db_sanitize=address,undefined -Dtests=enabled
-          meson compile -C build
-          meson test -C build --print-errorlogs --suite=captppd
-          meson install -C build
+          cmake -G Ninja -S. -B build -DCAPTPPD_SANITIZE=ON -DCAPTPPD_BUILD_TESTS=ON
+          cmake --build build -v -j
+          ctest --test-dir build --output-on-failure -j
+          cmake --install build
           lpadmin -p LBP3200 -E -v 'captusb://Canon/LBP3200?serial=00000000' -m LBP3200CAPTPPD.ppd || (cat /var/log/cups/error_log && false)
           "
 
@@ -83,7 +74,6 @@ jobs:
       fail-fast: false
       matrix:
         release:
-          - "13.5"
           - "14.3"
     defaults:
       run:
@@ -98,23 +88,23 @@ jobs:
         uses: vmactions/freebsd-vm@v1
         with:
           release: ${{ matrix.release }}
-          prepare: pkg install -y meson googletest pkgconf llvm-devel cups git
+          prepare: pkg install -y ninja googletest pkgconf llvm-devel cups git cmake
           envs: 'GITHUB_ACTIONS'
 
       - name: Start CUPS service
         run: service cupsd onestart
 
       - name: Configure
-        run: cd $GITHUB_WORKSPACE && meson setup build -Db_sanitize=address,undefined -Dtests=enabled -Dcpp_args="-fexperimental-library"
+        run: CXXFLAGS=-fexperimental-library cmake -G Ninja -S $GITHUB_WORKSPACE -B $GITHUB_WORKSPACE/build -DCAPTPPD_SANITIZE=ON -DCAPTPPD_BUILD_TESTS=ON
 
       - name: Compile
-        run: cd $GITHUB_WORKSPACE && meson compile -C build
+        run: cmake --build $GITHUB_WORKSPACE/build -v -j
 
       - name: Run tests
-        run: cd $GITHUB_WORKSPACE && meson test -C build --print-errorlogs --suite=captppd
+        run: ctest --test-dir $GITHUB_WORKSPACE/build --output-on-failure -j
 
       - name: Install
-        run: cd $GITHUB_WORKSPACE && meson install -C build
+        run: cmake --install $GITHUB_WORKSPACE/build
 
       - name: Verify install with lpadmin
         run: lpadmin -p LBP3200 -E -v 'captusb://Canon/LBP3200?serial=00000000' -m LBP3200CAPTPPD.ppd || (cat /var/log/cups/error_log && false)

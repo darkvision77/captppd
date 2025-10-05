@@ -1,5 +1,0 @@
-option('backendname', type: 'string', value: 'captusb', description: 'Backend name')
-option('cupsserverbin', type: 'string', value: '', description: 'CUPS bin directory (default from cups-config)')
-option('cupsdatadir', type: 'string', value: '', description: 'CUPS data directory (default from cups-config)')
-option('ditheringopt', type: 'feature', value: 'disabled', description: 'Enable "Dithering type" option')
-option('tests', type: 'feature', value: 'disabled', description: 'Build tests')

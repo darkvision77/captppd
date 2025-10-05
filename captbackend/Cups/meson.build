@@ -1,3 +1,0 @@
-sources += files(
-    'CupsRasterStreambuf.cpp',
-)

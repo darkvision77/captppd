@@ -30,9 +30,9 @@ theoretically, is completely reliable.
 ### Dependencies
 #### Compile-time
 - gcc >= 11 or clang >= 17 (with `-fexperimental-library` until clang 20)
-- meson >= 1.5.0
+- cmake >= 3.21
 - git
-- [libcapt](https://github.com/darkvision77/libcapt) (downloaded automatically by meson)
+- [libcapt](https://github.com/darkvision77/libcapt) (downloaded automatically by CMake FetchContent)
 
 #### Run-time
 - cups
@@ -40,20 +40,20 @@ theoretically, is completely reliable.
 
 ### Compile
 ```sh
-meson setup build
-meson compile -C build
+cmake -S. -B build
+cmake --build build
 ```
 
 ### Install
 This command will install the backend, PPD files, and quirks
 that prevent Canon CAPT v1 printers from being detected by the CUPS USB backend:
 ```sh
-meson install -C build
+cmake --install build
 ```
 
 If you don't want to blacklist Canon CAPT v1 printers for the CUPS USB backend, you can use:
 ```sh
-meson install -C build --tags=base
+cmake --install build --component=base
 ```
 
 ## Usage

@@ -20,10 +20,10 @@ static inline Capt::Utility::CropStreambuf crop(RasterStreambuf& rasterStr, Capt
 }
 
 CaptPrinter::CaptPrinter(std::iostream& stream, StateReporter& reporter) noexcept
-    : Capt::BasicCaptPrinter(stream), reporter(reporter) {}
+    : Capt::BasicCaptPrinter<StopTokenType>(stream), reporter(reporter) {}
 
 Capt::Protocol::ExtendedStatus CaptPrinter::GetStatus() {
-    Capt::Protocol::ExtendedStatus status = this->Capt::BasicCaptPrinter::GetStatus();
+    Capt::Protocol::ExtendedStatus status = this->Capt::BasicCaptPrinter<StopTokenType>::GetStatus();
     this->reporter.Update(status);
     return status;
 }
