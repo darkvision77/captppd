@@ -3,12 +3,12 @@
 
 #include "RasterStreambuf.hpp"
 #include "StateReporter.hpp"
+#include "StopToken.hpp"
 #include <libcapt/BasicCaptPrinter.hpp>
 #include <libcapt/Utility/BufferedPage.hpp>
 #include <iostream>
-#include <stop_token>
 
-class CaptPrinter : public Capt::BasicCaptPrinter<std::stop_token> {
+class CaptPrinter : public Capt::BasicCaptPrinter<StopToken> {
 private:
     StateReporter& reporter;
 public:
@@ -16,13 +16,13 @@ public:
 
     Capt::Protocol::ExtendedStatus GetStatus() override;
 
-    Capt::Protocol::ExtendedStatus WaitReady(std::stop_token stopToken);
-    void PrepareBeforePrint(std::stop_token stopToken, unsigned page);
-    std::optional<Capt::Protocol::ExtendedStatus> WritePage(std::stop_token stopToken, Capt::Utility::BufferedPage& page, Capt::Utility::BufferedPage* prev);
-    std::optional<Capt::Protocol::ExtendedStatus> WaitLastPage(std::stop_token stopToken, Capt::Utility::BufferedPage& page);
+    Capt::Protocol::ExtendedStatus WaitReady(StopTokenType stopToken);
+    void PrepareBeforePrint(StopTokenType stopToken, unsigned page);
+    std::optional<Capt::Protocol::ExtendedStatus> WritePage(StopTokenType stopToken, Capt::Utility::BufferedPage& page, Capt::Utility::BufferedPage* prev);
+    std::optional<Capt::Protocol::ExtendedStatus> WaitLastPage(StopTokenType stopToken, Capt::Utility::BufferedPage& page);
 
-    bool Print(std::stop_token stopToken, RasterStreambuf& rasterStr);
-    bool Clean(std::stop_token stopToken);
+    bool Print(StopTokenType stopToken, RasterStreambuf& rasterStr);
+    bool Clean(StopTokenType stopToken);
 };
 
 #endif

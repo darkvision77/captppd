@@ -3,6 +3,7 @@
 #include "Core/CaptPrinter.hpp"
 #include "Core/Log.hpp"
 #include "Core/PrinterInfo.hpp"
+#include "Core/StopToken.hpp"
 #include "Cups/CupsRasterStreambuf.hpp"
 #include "UsbBackend/UsbBackend.hpp"
 #include "UsbBackend/UsbError.hpp"
@@ -14,7 +15,6 @@
 #include <exception>
 #include <iostream>
 #include <optional>
-#include <stop_token>
 #include <cups/backend.h>
 #include <libcapt/UnexpectedBehaviourError.hpp>
 #include <libcapt/Version.hpp>
@@ -24,7 +24,7 @@
 
 using namespace std::literals::chrono_literals;
 
-static std::stop_source stopSource;
+static StopSource stopSource;
 
 static void sighandler([[maybe_unused]] int sig) noexcept {
     stopSource.request_stop();
@@ -35,7 +35,7 @@ static std::optional<std::string_view> getEnv(const std::string& key) noexcept {
     return val == nullptr ? std::nullopt : std::optional(std::string_view(val));
 }
 
-static std::optional<UsbPrinter> connectByUri(std::stop_token stopToken, UsbBackend& backend, std::string_view uri) {
+static std::optional<UsbPrinter> connectByUri(StopToken stopToken, UsbBackend& backend, std::string_view uri) {
     while (!stopToken.stop_requested()) {
         std::vector<UsbPrinter> printers = backend.GetPrinters();
         for (UsbPrinter& p : printers) {
@@ -73,7 +73,7 @@ int main(int argc, const char* argv[]) {
     std::signal(SIGPIPE, SIG_IGN);
     std::signal(SIGTERM, sighandler);
     std::signal(SIGINT, sighandler);
-    std::stop_token stopToken = stopSource.get_token();
+    StopToken stopToken = stopSource.get_token();
 
     if (argc != 1 && argc != 6 && argc != 7) {
         std::cout << "Usage: " << argv[0] << " job-id user title copies options [file]" << std::endl;

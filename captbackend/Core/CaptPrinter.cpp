@@ -28,7 +28,7 @@ Capt::Protocol::ExtendedStatus CaptPrinter::GetStatus() {
     return status;
 }
 
-Capt::Protocol::ExtendedStatus CaptPrinter::WaitReady(std::stop_token stopToken) {
+Capt::Protocol::ExtendedStatus CaptPrinter::WaitReady(StopTokenType stopToken) {
     Capt::Protocol::ExtendedStatus status = this->GetStatus();
     while (!stopToken.stop_requested() && !status.Ready()) {
         if (status.ClearErrorNeeded()) {
@@ -42,7 +42,7 @@ Capt::Protocol::ExtendedStatus CaptPrinter::WaitReady(std::stop_token stopToken)
     return status;
 }
 
-void CaptPrinter::PrepareBeforePrint(std::stop_token stopToken, unsigned page) {
+void CaptPrinter::PrepareBeforePrint(StopTokenType stopToken, unsigned page) {
     while (true) {
         Capt::Protocol::ExtendedStatus status = this->WaitReady(stopToken);
         if (stopToken.stop_requested()) {
@@ -60,7 +60,7 @@ void CaptPrinter::PrepareBeforePrint(std::stop_token stopToken, unsigned page) {
     }
 }
 
-std::optional<Capt::Protocol::ExtendedStatus> CaptPrinter::WritePage(std::stop_token stopToken, Capt::Utility::BufferedPage& page, Capt::Utility::BufferedPage* prev) {
+std::optional<Capt::Protocol::ExtendedStatus> CaptPrinter::WritePage(StopTokenType stopToken, Capt::Utility::BufferedPage& page, Capt::Utility::BufferedPage* prev) {
     Capt::Protocol::ReprintStatus reprint = Capt::Protocol::ReprintStatus::None;
     while (!stopToken.stop_requested()) {
         Capt::Utility::BufferedPage& p = (prev && reprint == Capt::Protocol::ReprintStatus::Prev) ? *prev : page;
@@ -95,7 +95,7 @@ std::optional<Capt::Protocol::ExtendedStatus> CaptPrinter::WritePage(std::stop_t
     return std::nullopt;
 }
 
-std::optional<Capt::Protocol::ExtendedStatus> CaptPrinter::WaitLastPage(std::stop_token stopToken, Capt::Utility::BufferedPage& page) {
+std::optional<Capt::Protocol::ExtendedStatus> CaptPrinter::WaitLastPage(StopTokenType stopToken, Capt::Utility::BufferedPage& page) {
     while (!stopToken.stop_requested()) {
         std::this_thread::sleep_for(1s);
         auto status = this->WaitPrintEnd(stopToken);
@@ -115,7 +115,7 @@ std::optional<Capt::Protocol::ExtendedStatus> CaptPrinter::WaitLastPage(std::sto
     return std::nullopt;
 }
 
-bool CaptPrinter::Print(std::stop_token stopToken, RasterStreambuf& rasterStr) {
+bool CaptPrinter::Print(StopTokenType stopToken, RasterStreambuf& rasterStr) {
     unsigned page = 0;
     Capt::Utility::BufferedPage prevPage;
     while (!stopToken.stop_requested()) {
@@ -150,7 +150,7 @@ bool CaptPrinter::Print(std::stop_token stopToken, RasterStreambuf& rasterStr) {
     return true;
 }
 
-bool CaptPrinter::Clean(std::stop_token stopToken) {
+bool CaptPrinter::Clean(StopTokenType stopToken) {
     while (!stopToken.stop_requested()) {
         this->PrepareBeforePrint(stopToken, 0);
         std::this_thread::sleep_for(1s); // Engine status delay

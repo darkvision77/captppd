@@ -95,7 +95,7 @@ jobs:
         run: service cupsd onestart
 
       - name: Configure
-        run: CXXFLAGS=-fexperimental-library cmake -G Ninja -S $GITHUB_WORKSPACE -B $GITHUB_WORKSPACE/build -DCAPTPPD_SANITIZE=ON -DCAPTPPD_BUILD_TESTS=ON
+        run: cmake -G Ninja -S $GITHUB_WORKSPACE -B $GITHUB_WORKSPACE/build -DCAPTPPD_SANITIZE=ON -DCAPTPPD_BUILD_TESTS=ON
 
       - name: Compile
         run: cmake --build $GITHUB_WORKSPACE/build -v -j

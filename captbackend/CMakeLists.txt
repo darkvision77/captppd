@@ -1,3 +1,18 @@
+include(CheckCXXSourceCompiles)
+
+check_cxx_source_compiles("
+#include <stop_token>
+int main() {
+    std::stop_token token;
+    return 0;
+}
+" HAVE_STOP_TOKEN)
+
+if(NOT HAVE_STOP_TOKEN)
+    message(STATUS "Compiler does not support std::stop_token, using fallback implementation")
+    set(HAVE_STOP_TOKEN 0)
+endif()
+
 configure_file(Config.hpp.in ${CMAKE_CURRENT_SOURCE_DIR}/Config.hpp @ONLY)
 
 find_package(libcapt)
