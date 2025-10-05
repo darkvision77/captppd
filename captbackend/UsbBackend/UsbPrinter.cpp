@@ -137,7 +137,7 @@ void UsbPrinter::reset() noexcept {
 
 std::string UsbPrinter::getStringDescriptor(uint8_t idx) {
     assert(this->handle.get() != nullptr);
-	unsigned char buffer[256];
+    unsigned char buffer[256];
     int length = libusb_get_string_descriptor_ascii(this->handle.get(), idx, buffer, sizeof(buffer));
     if (length < 0) {
         Log::Debug() << "libusb_get_string_descriptor_ascii failed: " << libusb_error_name(length);
