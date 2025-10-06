@@ -48,11 +48,11 @@ public:
 
     void Parse(std::string_view s) {
         for (const auto line : (s | std::views::split('\n'))) {
-            #if defined(__GNUC__) && __GNUC__ < 12
-                auto c = line | std::views::common;
-                std::string str(c.begin(), c.end());
+            #if !defined(__llvm__) && defined(__GNUC__) && __GNUC__ < 12
+            auto c = line | std::views::common;
+            std::string str(c.begin(), c.end());
             #else
-                std::string_view str(line);
+            std::string_view str(line);
             #endif
             if (str.starts_with("STATE: ")) {
                 std::string reason(str.substr(8));

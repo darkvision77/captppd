@@ -7,6 +7,24 @@
 
 using namespace std::string_view_literals;
 
+template<typename Iter1, typename Iter2>
+static inline std::string makeString(Iter1 first, Iter2 last) {
+    #if !defined(__llvm__) && defined(__GNUC__) && __GNUC__ < 12
+    auto c = std::ranges::subrange(first, last) | std::views::common;
+    return std::string(c.begin(), c.end());
+    #else
+    return std::string(first, last);
+    #endif
+}
+
+template<typename Iter>
+constexpr bool nextCmp(Iter& iter, std::string_view target) noexcept {
+    const std::size_t size = target.size();
+    const std::string_view str(iter, iter + size);
+    iter += size;
+    return str == target;
+}
+
 PrinterInfo PrinterInfo::Parse(std::string_view devId, std::string_view serial) {
     PrinterInfo info;
     info.DeviceId = devId;
@@ -17,7 +35,7 @@ PrinterInfo PrinterInfo::Parse(std::string_view devId, std::string_view serial) 
             continue;
         }
         auto k = std::ranges::subrange(part.begin(), delim);
-        std::string v(delim + 1, part.end());
+        std::string v = makeString(std::next(delim), part.end());
         if (std::ranges::equal(k, "MFG"sv) || std::ranges::equal(k, "MANUFACTURER"sv)) {
             info.Manufacturer = v;
         } else if (std::ranges::equal(k, "MDL"sv) || std::ranges::equal(k, "MODEL"sv)) {
@@ -45,14 +63,6 @@ std::string PrinterInfo::MakeUri() const {
     return ss.str();
 }
 
-template<typename IterT>
-constexpr bool nextCmp(IterT& iter, std::string_view target) noexcept {
-    const std::size_t size = target.size();
-    const std::string_view str(iter, iter + size);
-    iter += size;
-    return str == target;
-}
-
 bool PrinterInfo::HasUri(std::string_view uri) const {
     constexpr std::string_view proto = CAPTBACKEND_NAME "://";
     const std::size_t minLen = proto.size() + this->Manufacturer.size() + this->Model.size() + 2;
@@ -75,7 +85,7 @@ bool PrinterInfo::HasUri(std::string_view uri) const {
             continue;
         }
         auto k = std::ranges::subrange(part.begin(), delim);
-        auto v = std::ranges::subrange(delim + 1, part.end());
+        auto v = std::ranges::subrange(std::next(delim), part.end());
         if (std::ranges::equal(k, "serial"sv) && std::ranges::equal(v, this->Serial)) {
             return true;
         }
