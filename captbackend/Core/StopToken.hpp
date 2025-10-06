@@ -3,16 +3,14 @@
 
 #include "Config.hpp"
 
-#ifndef HAVE_STOP_TOKEN
-#error HAVE_STOP_TOKEN must be defined
-#endif
-
 #if HAVE_STOP_TOKEN
-#include <stop_token>
 
+#include <stop_token>
 typedef std::stop_token StopToken;
 typedef std::stop_source StopSource;
+
 #else
+
 #include <atomic>
 
 class StopSource;

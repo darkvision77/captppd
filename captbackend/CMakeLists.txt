@@ -13,7 +13,7 @@ if(NOT HAVE_STOP_TOKEN)
     set(HAVE_STOP_TOKEN 0)
 endif()
 
-configure_file(Config.hpp.in ${CMAKE_CURRENT_SOURCE_DIR}/Config.hpp @ONLY)
+configure_file(Config.hpp.in "${CMAKE_CURRENT_SOURCE_DIR}/Config.hpp" @ONLY)
 
 find_package(libcapt)
 if(NOT libcapt_FOUND)
