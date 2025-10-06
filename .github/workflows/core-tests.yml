@@ -108,3 +108,44 @@ jobs:
 
       - name: Verify install with lpadmin
         run: lpadmin -p LBP3200 -E -v 'captusb://Canon/LBP3200?serial=00000000' -m LBP3200CAPTPPD.ppd || (cat /var/log/cups/error_log && false)
+
+  OpenBSD:
+    needs: Ubuntu
+    strategy:
+      fail-fast: false
+      matrix:
+        release:
+          - "7.7"
+    defaults:
+      run:
+        shell: openbsd {0}
+    name: OpenBSD ${{ matrix.release }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Run OpenBSD VM
+        uses: vmactions/openbsd-vm@v1
+        with:
+          release: ${{ matrix.release }}
+          prepare: pkg_add cmake gtest ninja pkgconf cups cups-libs git libusb1
+          envs: 'GITHUB_ACTIONS'
+
+      - name: Start CUPS service
+        run: rcctl start cupsd
+
+      - name: Configure
+        run: cmake -G Ninja -S $GITHUB_WORKSPACE -B $GITHUB_WORKSPACE/build -DCAPTPPD_BUILD_TESTS=ON
+
+      - name: Compile
+        run: cmake --build $GITHUB_WORKSPACE/build -v -j
+
+      - name: Run tests
+        run: ctest --test-dir $GITHUB_WORKSPACE/build --output-on-failure -j
+
+      - name: Install
+        run: cmake --install $GITHUB_WORKSPACE/build
+
+      - name: Verify install with lpadmin
+        run: lpadmin -p LBP3200 -E -v 'captusb://Canon/LBP3200?serial=00000000' -m LBP3200CAPTPPD.ppd || (cat /var/log/cups/error_log && false)
