@@ -1,35 +1,32 @@
 #include "PrinterInfo.hpp"
 #include "Config.hpp"
+#include <algorithm>
 #include <ranges>
 #include <sstream>
 #include <string_view>
 
-static std::pair<std::string_view, std::string_view> splitKv(std::string_view str, char sep) noexcept {
-    std::size_t delimPos = str.find(sep);
-    return {str.substr(0, delimPos), str.substr(delimPos + 1)};
-}
+using namespace std::string_view_literals;
 
 PrinterInfo PrinterInfo::Parse(std::string_view devId, std::string_view serial) {
     PrinterInfo info;
     info.DeviceId = devId;
     info.Serial = serial;
     for (const auto part : (devId | std::views::split(';'))) {
-        #if defined(__GNUC__) && __GNUC__ < 12
-            auto c = part | std::views::common;
-            std::string str(c.begin(), c.end());
-        #else
-            std::string_view str(part);
-        #endif
-        auto [k, v] = splitKv(str, ':');
-        if (k == "MFG" || k == "MANUFACTURER") {
+        auto delim = std::ranges::find(part, ':');
+        if (delim == part.end()) {
+            continue;
+        }
+        auto k = std::ranges::subrange(part.begin(), delim);
+        std::string v(delim + 1, part.end());
+        if (std::ranges::equal(k, "MFG"sv) || std::ranges::equal(k, "MANUFACTURER"sv)) {
             info.Manufacturer = v;
-        } else if (k == "MDL" || k == "MODEL") {
+        } else if (std::ranges::equal(k, "MDL"sv) || std::ranges::equal(k, "MODEL"sv)) {
             info.Model = v;
-        } else if (k == "DES" || k == "DESCRIPTION") {
+        } else if (std::ranges::equal(k, "DES"sv) || std::ranges::equal(k, "DESCRIPTION"sv)) {
             info.Description = v;
-        } else if (k == "CMD" || k == "COMMAND SET") {
+        } else if (std::ranges::equal(k, "CMD"sv) || std::ranges::equal(k, "COMMAND SET"sv)) {
             info.CommandSet = v;
-        } else if (k == "VER") {
+        } else if (std::ranges::equal(k, "VER"sv)) {
             info.CmdVersion = v;
         }
     }
@@ -37,7 +34,7 @@ PrinterInfo PrinterInfo::Parse(std::string_view devId, std::string_view serial) 
 }
 
 bool PrinterInfo::IsCaptPrinter() const noexcept {
-    return this->CommandSet == "CAPT" && this->CmdVersion.starts_with('1');
+    return this->CmdVersion.starts_with('1') && this->CommandSet == "CAPT";
 }
 
 std::string PrinterInfo::MakeUri() const {
@@ -48,22 +45,38 @@ std::string PrinterInfo::MakeUri() const {
     return ss.str();
 }
 
+template<typename IterT>
+constexpr bool nextCmp(IterT& iter, std::string_view target) noexcept {
+    const std::size_t size = target.size();
+    const std::string_view str(iter, iter + size);
+    iter += size;
+    return str == target;
+}
+
 bool PrinterInfo::HasUri(std::string_view uri) const {
-    std::ostringstream ss;
-    ss << CAPTBACKEND_NAME "://" << this->Manufacturer << '/' << this->Model << "?";
-    const std::string_view prefix = ss.view();
-    if (!uri.starts_with(prefix)) {
+    constexpr std::string_view proto = CAPTBACKEND_NAME "://";
+    const std::size_t minLen = proto.size() + this->Manufacturer.size() + this->Model.size() + 2;
+    if (uri.size() < minLen || !uri.starts_with(proto)) {
         return false;
     }
-    for (const auto part : (uri.substr(prefix.size()) | std::views::split('&'))) {
-        #if defined(__GNUC__) && __GNUC__ < 12
-            auto c = part | std::views::common;
-            std::string str(c.begin(), c.end());
-        #else
-            std::string_view str(part);
-        #endif
-        auto [k, v] = splitKv(str, '=');
-        if (k == "serial" && v == this->Serial) {
+    auto iter = uri.cbegin();
+    if (!nextCmp(iter, proto)
+        || !nextCmp(iter, this->Manufacturer)
+        || *iter++ != '/'
+        || !nextCmp(iter, this->Model)
+        || *iter++ != '?') {
+        return false;
+    }
+
+    const std::string_view query(iter, uri.cend());
+    for (const auto part : (query | std::views::split('&'))) {
+        auto delim = std::ranges::find(part, '=');
+        if (delim == part.end()) {
+            continue;
+        }
+        auto k = std::ranges::subrange(part.begin(), delim);
+        auto v = std::ranges::subrange(delim + 1, part.end());
+        if (std::ranges::equal(k, "serial"sv) && std::ranges::equal(v, this->Serial)) {
             return true;
         }
     }

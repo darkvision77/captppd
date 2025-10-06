@@ -29,7 +29,7 @@ theoretically, is completely reliable.
 ## Compilation
 ### Dependencies
 #### Compile-time
-- gcc >= 11 or clang >= 17
+- gcc >= 11 or clang >= 16
 - cmake >= 3.21
 - git
 - [libcapt](https://github.com/darkvision77/libcapt) (downloaded automatically by CMake FetchContent)

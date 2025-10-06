@@ -94,7 +94,7 @@ public:
     }
 
     void Parse() {
-        this->Parser.Parse(this->Stream.view());
+        this->Parser.Parse(this->Stream.str());
         this->Flush();
     }
 
