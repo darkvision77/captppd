@@ -1,6 +1,7 @@
 #include "Core/PrinterInfo.hpp"
 #include "Config.hpp"
 #include <gtest/gtest.h>
+#include <sstream>
 #include <string_view>
 #include <utility>
 
@@ -15,7 +16,9 @@ TEST(PrinterInfoTest, Uri) {
         .CmdVersion = "1.0",
     };
 
-    EXPECT_TRUE(info.HasUri(info.MakeUri()));
+    std::ostringstream ss;
+    info.WriteUri(ss);
+    EXPECT_TRUE(info.HasUri(ss.str()));
     EXPECT_TRUE(info.HasUri(CAPTBACKEND_NAME "://Canon/LBP3200?serial=98765432"));
     EXPECT_TRUE(info.HasUri(CAPTBACKEND_NAME "://Canon/LBP3200?somevar=test&serial=98765432"));
     EXPECT_TRUE(info.HasUri(CAPTBACKEND_NAME "://Canon/LBP3200?serial=98765432&somevar=test"));

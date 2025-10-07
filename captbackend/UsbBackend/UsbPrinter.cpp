@@ -173,7 +173,7 @@ std::optional<PrinterInfo> UsbPrinter::GetPrinterInfo() {
         }
     }
     std::string serial = this->getStringDescriptor(this->desc.iSerialNumber);
-    PrinterInfo info = PrinterInfo::Parse(this->getDeviceId(), serial);
+    PrinterInfo info = PrinterInfo::Parse(this->getDeviceId(), std::move(serial));
     if (opened) {
         this->Close();
     }
