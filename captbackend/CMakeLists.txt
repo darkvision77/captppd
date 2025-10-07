@@ -15,7 +15,7 @@ endif()
 
 configure_file(Config.hpp.in "${CMAKE_CURRENT_SOURCE_DIR}/Config.hpp" @ONLY)
 
-find_package(libcapt)
+find_package(libcapt QUIET)
 if(NOT libcapt_FOUND)
     message(STATUS "libcapt not found, using FetchContent")
     include(FetchContent)
