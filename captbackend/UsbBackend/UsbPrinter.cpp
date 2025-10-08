@@ -167,7 +167,7 @@ std::optional<PrinterInfo> UsbPrinter::GetPrinterInfo() {
         int err = this->open();
         if (err != LIBUSB_SUCCESS) {
             Log::Debug() << "Failed to open device " << std::hex << std::setfill('0')
-                << std::setw(4) << this->VendorId() << ':' << std::setw(4) << this->VendorId()
+                << std::setw(4) << this->VendorId() << ':' << std::setw(4) << this->ProductId()
                 << " (" << libusb_error_name(err) << "), skipping";
             return std::nullopt;
         }
