@@ -18,7 +18,11 @@ public:
 
     Capt::Protocol::ExtendedStatus WaitReady(StopTokenType stopToken);
     void PrepareBeforePrint(StopTokenType stopToken, unsigned page);
+
+    // Has value if error
     std::optional<Capt::Protocol::ExtendedStatus> WritePage(StopTokenType stopToken, Capt::Utility::BufferedPage& page, Capt::Utility::BufferedPage* prev);
+
+    // Has value if error
     std::optional<Capt::Protocol::ExtendedStatus> WaitLastPage(StopTokenType stopToken, Capt::Utility::BufferedPage& page);
 
     bool Print(StopTokenType stopToken, RasterStreambuf& rasterStr);

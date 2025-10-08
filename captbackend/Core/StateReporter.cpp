@@ -26,7 +26,7 @@ void StateReporter::Update(ExtendedStatus status) {
     this->SetReason("door-open-error", (status.Engine & EngineReadyStatus::DOOR_OPEN) != 0);
 
     bool waiting = (status.Engine & EngineReadyStatus::WAITING) != 0
-        | (status.Controller & ControllerStatus::ENGINE_RESET_IN_PROGRESS) != 0;
+        || (status.Controller & ControllerStatus::ENGINE_RESET_IN_PROGRESS) != 0;
     this->SetReason("resuming", waiting);
 }
 

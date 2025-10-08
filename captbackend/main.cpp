@@ -30,8 +30,8 @@ static void sighandler([[maybe_unused]] int sig) noexcept {
     stopSource.request_stop();
 }
 
-static std::optional<std::string_view> getEnv(const std::string& key) noexcept {
-    const char* val = std::getenv(key.c_str());
+static inline std::optional<std::string_view> getEnv(const char* key) noexcept {
+    const char* val = std::getenv(key);
     return val == nullptr ? std::nullopt : std::optional(std::string_view(val));
 }
 

@@ -60,6 +60,7 @@ void CaptPrinter::PrepareBeforePrint(StopTokenType stopToken, unsigned page) {
     }
 }
 
+// Has value if error
 std::optional<Capt::Protocol::ExtendedStatus> CaptPrinter::WritePage(StopTokenType stopToken, Capt::Utility::BufferedPage& page, Capt::Utility::BufferedPage* prev) {
     Capt::Protocol::ReprintStatus reprint = Capt::Protocol::ReprintStatus::None;
     while (!stopToken.stop_requested()) {
@@ -95,6 +96,7 @@ std::optional<Capt::Protocol::ExtendedStatus> CaptPrinter::WritePage(StopTokenTy
     return std::nullopt;
 }
 
+// Has value if error
 std::optional<Capt::Protocol::ExtendedStatus> CaptPrinter::WaitLastPage(StopTokenType stopToken, Capt::Utility::BufferedPage& page) {
     while (!stopToken.stop_requested()) {
         std::this_thread::sleep_for(1s);
@@ -118,13 +120,14 @@ std::optional<Capt::Protocol::ExtendedStatus> CaptPrinter::WaitLastPage(StopToke
 bool CaptPrinter::Print(StopTokenType stopToken, RasterStreambuf& rasterStr) {
     unsigned page = 0;
     Capt::Utility::BufferedPage prevPage;
+    Capt::Compression::ScoaStreambuf ss;
     while (!stopToken.stop_requested()) {
         std::optional<Capt::Protocol::PageParams> params = rasterStr.NextPage();
         if (!params) {
             break;
         }
         Capt::Utility::CropStreambuf cropStr = crop(rasterStr, *params);
-        Capt::Compression::ScoaStreambuf ss(cropStr, params->ImageLineSize, params->ImageLines);
+        ss.Reset(cropStr, params->ImageLineSize, params->ImageLines);
         Capt::Utility::BufferedPage currPage(page, *params, &ss);
         reporter.Page(page + 1);
 
@@ -153,7 +156,7 @@ bool CaptPrinter::Print(StopTokenType stopToken, RasterStreambuf& rasterStr) {
 bool CaptPrinter::Clean(StopTokenType stopToken) {
     while (!stopToken.stop_requested()) {
         this->PrepareBeforePrint(stopToken, 0);
-        std::this_thread::sleep_for(1s); // Engine status delay
+        std::this_thread::sleep_for(1s); // Manual slot delay
         this->Cleaning();
         Log::Info() << "Cleaning...";
         std::this_thread::sleep_for(2s);

@@ -7,6 +7,7 @@
 inline constexpr std::string_view MsgReady = "Ready";
 inline constexpr std::string_view MsgNotReady = "Not ready";
 inline constexpr std::string_view MsgUnknownFatal = "Unknown fatal error";
+inline constexpr std::string_view MsgVideoError = "Video data error";
 inline constexpr std::string_view MsgDoorOpen = "Door open";
 inline constexpr std::string_view MsgJam = "Paper jam";
 inline constexpr std::string_view MsgNoCartridge = "No cartridge";
@@ -24,8 +25,11 @@ inline constexpr std::string_view MsgCleaning = "Cleaning";
     if (status.FatalError()) {
         return MsgUnknownFatal;
     }
+    if (status.VideoDataError()) {
+        return MsgVideoError;
+    }
     bool waiting = (status.Engine & EngineReadyStatus::WAITING) != 0
-        | (status.Controller & ControllerStatus::ENGINE_RESET_IN_PROGRESS) != 0;
+        || (status.Controller & ControllerStatus::ENGINE_RESET_IN_PROGRESS) != 0;
     if (waiting) {
         return MsgWaiting;
     }

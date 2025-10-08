@@ -21,7 +21,7 @@ public:
     StopToken() noexcept : src(nullptr) {}
     explicit StopToken(const StopSource& src) : src(&src) {}
 
-    bool stop_requested() const noexcept;
+    [[nodiscard]] bool stop_requested() const noexcept;
 };
 
 class StopSource {
@@ -47,11 +47,11 @@ public:
         return false;
     }
 
-    bool stop_requested() const noexcept {
+    [[nodiscard]] bool stop_requested() const noexcept {
         return this->stopReq.load();
     }
 
-    StopToken get_token() const noexcept {
+    [[nodiscard]] StopToken get_token() const noexcept {
         return StopToken(*this);
     }
 };

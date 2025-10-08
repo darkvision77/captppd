@@ -17,7 +17,7 @@ private:
     int_type underflow() override;
 public:
     CupsRasterStreambuf() noexcept = default;
-    ~CupsRasterStreambuf() noexcept;
+    ~CupsRasterStreambuf() noexcept override;
 
     bool Open(const char* file = nullptr) noexcept;
     void Close() noexcept;

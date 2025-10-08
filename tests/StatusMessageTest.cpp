@@ -52,10 +52,10 @@ TEST(StatusMessageTest, Basic) {
         { { 0, AuxStatus::SAFE_TIMER }, MsgPrinting },
 
         { { 0, 0, ControllerStatus::ENGINE_RESET_IN_PROGRESS }, MsgWaiting },
-        { { 0, 0, ControllerStatus::INVALID_DATA }, MsgReady },
-        { { 0, 0, ControllerStatus::MISSING_EOP }, MsgReady },
-        { { 0, 0, ControllerStatus::UNDERRUN }, MsgReady },
-        { { 0, 0, ControllerStatus::OVERRUN }, MsgReady },
+        { { 0, 0, ControllerStatus::INVALID_DATA }, MsgVideoError },
+        { { 0, 0, ControllerStatus::MISSING_EOP }, MsgVideoError },
+        { { 0, 0, ControllerStatus::UNDERRUN }, MsgVideoError },
+        { { 0, 0, ControllerStatus::OVERRUN }, MsgVideoError },
         { { 0, 0, ControllerStatus::ENGINE_COMM_ERROR }, MsgReady },
         { { 0, 0, ControllerStatus::PRINT_REJECTED }, MsgReady },
 
