@@ -18,11 +18,7 @@ option(CAPTPPD_SANITIZE "Enable address and undefined sanitizers" OFF)
 option(CAPTPPD_DITHERING_OPT "Enable dithering option in PPD" OFF)
 set(CAPTPPD_BACKEND_NAME "captusb" CACHE STRING "Backend name")
 
-if(MSVC)
-    add_compile_options(/W4)
-else()
-    add_compile_options(-Wall -Wextra -Wpedantic)
-endif()
+add_compile_options(-Wall -Wextra)
 
 if(CAPTPPD_COVERAGE)
     add_compile_options(--coverage -g)
