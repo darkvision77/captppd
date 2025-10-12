@@ -92,12 +92,14 @@ if(NOT CUPS_LIBS)
     cups_config_opt(CUPS_LIBS --libs)
 endif()
 
+if(CAPTPPD_BUILD_TESTS)
+    enable_testing()
+endif()
+
 add_subdirectory(captbackend)
 add_subdirectory(ppd)
 add_subdirectory(dist)
-
 if(CAPTPPD_BUILD_TESTS)
-    enable_testing()
     add_subdirectory(tests)
 endif()
 
