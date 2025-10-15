@@ -33,6 +33,7 @@ Capt::Protocol::ExtendedStatus CaptPrinter::WaitReady(StopTokenType stopToken) {
     while (!stopToken.stop_requested() && !status.Ready()) {
         if (status.ClearErrorNeeded()) {
             Log::Debug() << "Calling ClearError()";
+            Log::Debug() << "Status is " << status;
             this->ClearError(&status);
         }
         Log::Info() << "Stopped (" << StatusMessage(status) << ')';
@@ -163,6 +164,7 @@ bool CaptPrinter::Clean(StopTokenType stopToken) {
 
         Capt::Protocol::ExtendedStatus status = this->GetStatus();
         if (status.FatalError()) {
+            Log::Debug() << "Clean failed: " << status;
             Log::Critical() << "Unknown fatal error";
             return false;
         }
