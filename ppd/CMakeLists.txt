@@ -17,7 +17,9 @@ add_custom_command(
     -D "HAVE_DITHERING_TYPE=$<IF:$<BOOL:${CAPTPPD_DITHERING_OPT}>,1,0>"
     -d "${CMAKE_CURRENT_BINARY_DIR}"
     "${CMAKE_CURRENT_LIST_DIR}/captppd.drv"
-    DEPENDS "${CMAKE_CURRENT_LIST_DIR}/captppd.drv"
+    DEPENDS
+    "${CMAKE_CURRENT_LIST_DIR}/captppd.drv"
+    "${CMAKE_CURRENT_LIST_DIR}/media.drv"
     VERBATIM
 )
 
