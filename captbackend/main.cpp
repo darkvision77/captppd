@@ -17,7 +17,7 @@
 #include <optional>
 #include <cups/backend.h>
 #include <libcapt/UnexpectedBehaviourError.hpp>
-#include <libcapt/Version.hpp>
+#include <libcapt/Config.hpp>
 #include <string_view>
 #include <thread>
 #include <vector>

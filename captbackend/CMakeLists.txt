@@ -22,7 +22,7 @@ if(NOT libcapt_FOUND)
     FetchContent_Declare(
         libcapt
         GIT_REPOSITORY https://github.com/darkvision77/libcapt.git
-        GIT_TAG v0.15.0
+        GIT_TAG v0.15.11
     )
     FetchContent_MakeAvailable(libcapt)
 endif()
