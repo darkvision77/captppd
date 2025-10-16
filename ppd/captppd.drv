@@ -21,11 +21,12 @@ ManualCopies yes
 // cupsInteger1 - MarginTop
 // cupsInteger2 - PaperWidth
 // cupsInteger3 - PaperHeight
+// cupsInteger4 - PaperSize
 
-// cupsInteger4 - SmoothEnable
-// cupsInteger5 - TonerSaving
+// cupsInteger5 - SmoothEnable
+// cupsInteger6 - TonerSaving
 // cupsCompression - TonerDensity
-// cupsMediaType - PaperSize
+// cupsMediaType - Mode
 
 #include "media.drv"
 
@@ -42,12 +43,12 @@ Darkness 0x2f "4/Dark"
 Darkness 0x3f "5/Extra Dark"
 
 Option "imageRefinement/Image Refinement" PickOne AnySetup 20
-    Choice "False/Disabled" "<</cupsInteger4 0>>setpagedevice"
-    *Choice "True/Enabled" "<</cupsInteger4 1>>setpagedevice"
+    Choice "False/Disabled" "<</cupsInteger5 0>>setpagedevice"
+    *Choice "True/Enabled" "<</cupsInteger5 1>>setpagedevice"
 
 Option "tonerSaving/Toner Saving" PickOne AnySetup 30
-    *Choice "False/Disabled" "<</cupsInteger5 0>>setpagedevice"
-    Choice "True/Enabled" "<</cupsInteger5 1>>setpagedevice"
+    *Choice "False/Disabled" "<</cupsInteger6 0>>setpagedevice"
+    Choice "True/Enabled" "<</cupsInteger6 1>>setpagedevice"
 
 #if HAVE_DITHERING_TYPE
 Option "cupsHalftoneType/Dithering type" PickOne AnySetup 40

@@ -78,12 +78,12 @@ std::optional<Capt::Protocol::PageParams> CupsRasterStreambuf::NextPage() {
     this->linesRemain = header.cupsHeight;
     this->lineBuffer.resize(header.cupsBytesPerLine);
     return Capt::Protocol::PageParams{
-        .PaperSize = static_cast<uint8_t>(header.cupsMediaType),
+        .PaperSize = static_cast<uint8_t>(header.cupsInteger[4]),
         .TonerDensity = static_cast<uint8_t>(header.cupsCompression),
-        .Mode = static_cast<uint8_t>(0),
+        .Mode = static_cast<uint8_t>(header.cupsMediaType),
         .Resolution = header.HWResolution[0] == 600 ? Capt::Protocol::RES_600 : Capt::Protocol::RES_300,
-        .SmoothEnable = header.cupsInteger[4] != 0,
-        .TonerSaving = header.cupsInteger[5] != 0,
+        .SmoothEnable = header.cupsInteger[5] != 0,
+        .TonerSaving = header.cupsInteger[6] != 0,
         .MarginLeft = static_cast<uint16_t>(header.cupsInteger[0]),
         .MarginTop = static_cast<uint16_t>(header.cupsInteger[1]),
         .ImageLineSize = static_cast<uint16_t>(header.cupsBytesPerLine),
