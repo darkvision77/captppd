@@ -131,6 +131,12 @@ bool CaptPrinter::Print(StopTokenType stopToken, RasterStreambuf& rasterStr) {
         ss.Reset(cropStr, params->ImageLineSize, params->ImageLines);
         Capt::Utility::BufferedPage currPage(page, *params, &ss);
         reporter.Page(page + 1);
+        Log::Debug() << "Writing page params: ImageSize=" << static_cast<int>(params->ImageLineSize)
+            << 'x' << static_cast<int>(params->ImageLines)
+            << " PaperSize=" << static_cast<int>(params->PaperWidth) << 'x' << static_cast<int>(params->PaperHeight)
+            << " (" << static_cast<int>(params->PaperSize)
+            << ") MarginLeft=" << static_cast<int>(params->MarginLeft) << " MarginTop=" << static_cast<int>(params->MarginTop)
+            << " TonerDensity=" << static_cast<int>(params->TonerDensity) << " Mode=" << static_cast<int>(params->Mode);
 
         auto res = this->WritePage(stopToken, currPage, page == 0 ? nullptr : &prevPage);
         if (res.has_value()) {

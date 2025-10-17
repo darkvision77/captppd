@@ -74,7 +74,7 @@ std::optional<Capt::Protocol::PageParams> CupsRasterStreambuf::NextPage() {
             << " cupsNumColors=" << header.cupsNumColors;
         throw RasterError("invalid raster format");
     }
-    Log::Debug() << "Read header " << header.cupsBytesPerLine << 'x' << header.cupsHeight;
+    Log::Debug() << "Read header " << header.cupsBytesPerLine << 'x' << header.cupsHeight << " (" << header.cupsPageSizeName << ')';
     this->linesRemain = header.cupsHeight;
     this->lineBuffer.resize(header.cupsBytesPerLine);
     return Capt::Protocol::PageParams{
