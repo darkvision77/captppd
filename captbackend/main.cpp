@@ -12,6 +12,7 @@
 #include "Config.hpp"
 #include <cassert>
 #include <csignal>
+#include <cstring>
 #include <exception>
 #include <iostream>
 #include <optional>
@@ -74,6 +75,12 @@ int main(int argc, const char* argv[]) {
     std::signal(SIGTERM, sighandler);
     std::signal(SIGINT, sighandler);
     StopToken stopToken = stopSource.get_token();
+
+    if (argc == 2 && (std::strcmp(argv[1], "-v") || std::strcmp(argv[1], "--version"))) {
+        std::cout << CAPTBACKEND_NAME " version " CAPTBACKEND_VERSION_STRING << '\n';
+        std::cout << "libcapt version " LIBCAPT_VERSION_STRING << '\n';
+        return CUPS_BACKEND_OK;
+    }
 
     if (argc != 1 && argc != 6 && argc != 7) {
         std::cout << "Usage: " << argv[0] << " job-id user title copies options [file]" << std::endl;
