@@ -20,45 +20,10 @@ set(CAPTPPD_BACKEND_NAME "captusb" CACHE STRING "Backend name")
 
 add_compile_options(-Wall -Wextra)
 
-if(CAPTPPD_COVERAGE)
-    add_compile_options(--coverage -g)
-    add_link_options(--coverage)
+list(APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake")
 
-    find_program(LCOV NAMES lcov REQUIRED)
-    find_program(GENHTML NAMES genhtml REQUIRED)
-
-    set(LCOV_DIR "${CMAKE_BINARY_DIR}/coverage")
-    set(LCOV_FILE "${LCOV_DIR}/coverage.info")
-    file(MAKE_DIRECTORY "${LCOV_DIR}")
-    add_custom_target(
-        coverage
-        COMMAND
-        "${LCOV}"
-        --capture --all
-        --config-file "${CMAKE_SOURCE_DIR}/.lcovrc"
-        --directory "${CMAKE_BINARY_DIR}"
-        --base-directory "${CMAKE_SOURCE_DIR}"
-        --output-file "${LCOV_FILE}"
-        --demangle-cpp
-        --parallel ${CMAKE_BUILD_PARALLEL_LEVEL}
-        --quiet
-        COMMAND
-        "${GENHTML}"
-        -o "${LCOV_DIR}"
-        "${LCOV_FILE}"
-        --parallel ${CMAKE_BUILD_PARALLEL_LEVEL}
-        COMMAND echo "Coverage report can be found at file://${LCOV_DIR}/index.html"
-        VERBATIM
-    )
-
-    add_custom_target(
-        coverage-reset
-        COMMAND
-        "${LCOV}"
-        --directory "${CMAKE_BINARY_DIR}"
-        --zerocounters
-        VERBATIM
-    )
+if(LIBCAPT_COVERAGE)
+    include(Coverage)
 endif()
 
 if(CAPTPPD_SANITIZE)
@@ -103,19 +68,5 @@ if(CAPTPPD_BUILD_TESTS)
     add_subdirectory(tests)
 endif()
 
-message(STATUS "Summary")
-message(STATUS "  System                : ${CMAKE_SYSTEM_NAME}")
-message(STATUS "  C++ compiler          : ${CMAKE_CXX_COMPILER} ${CMAKE_CXX_COMPILER_ID} ${CMAKE_CXX_COMPILER_VERSION}")
-message(STATUS "  CMake version         : ${CMAKE_VERSION}")
-message(STATUS "  Build type            : ${CMAKE_BUILD_TYPE}")
-message(STATUS "  CXXFLAGS              : ${CMAKE_CXX_FLAGS}")
-message(STATUS "  CUPS_SERVER_BIN       : ${CUPS_SERVER_BIN}")
-message(STATUS "  CUPS_DATA_DIR         : ${CUPS_DATA_DIR}")
-message(STATUS "  CUPS_CFLAGS           : ${CUPS_CFLAGS}")
-message(STATUS "  CUPS_LDFLAGS          : ${CUPS_LDFLAGS}")
-message(STATUS "  CUPS_LIBS             : ${CUPS_LIBS}")
-message(STATUS "  CAPTPPD_BUILD_TESTS   : ${CAPTPPD_BUILD_TESTS}")
-message(STATUS "  CAPTPPD_COVERAGE      : ${CAPTPPD_COVERAGE}")
-message(STATUS "  CAPTPPD_SANITIZE      : ${CAPTPPD_SANITIZE}")
-message(STATUS "  CAPTPPD_DITHERING_OPT : ${CAPTPPD_DITHERING_OPT}")
-message(STATUS "  CAPTPPD_BACKEND_NAME  : ${CAPTPPD_BACKEND_NAME}")
+include(Packaging)
+include(Summary)
