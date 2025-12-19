@@ -18,7 +18,7 @@ option(CAPTPPD_SANITIZE "Enable address and undefined sanitizers" OFF)
 option(CAPTPPD_DITHERING_OPT "Enable dithering option in PPD" OFF)
 set(CAPTPPD_BACKEND_NAME "captusb" CACHE STRING "Backend name")
 
-add_compile_options(-Wall -Wextra)
+add_compile_options(-Wall -Wextra -Wpedantic)
 
 list(APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake")
 

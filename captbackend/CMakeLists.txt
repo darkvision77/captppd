@@ -32,7 +32,8 @@ pkg_check_modules(LIBUSB REQUIRED libusb-1.0)
 
 add_library(libcaptbackend STATIC)
 set_target_properties(libcaptbackend PROPERTIES PREFIX "" OUTPUT_NAME "lib${CAPTPPD_BACKEND_NAME}")
-target_include_directories(libcaptbackend PUBLIC ${CMAKE_CURRENT_SOURCE_DIR} ${LIBUSB_INCLUDE_DIRS})
+target_include_directories(libcaptbackend PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
+target_include_directories(libcaptbackend SYSTEM PUBLIC ${LIBUSB_INCLUDE_DIRS})
 target_link_libraries(libcaptbackend PUBLIC libcapt::libcapt ${LIBUSB_LIBRARIES})
 
 target_compile_options(libcaptbackend PUBLIC ${CUPS_CFLAGS})
