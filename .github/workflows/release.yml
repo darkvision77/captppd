@@ -1,0 +1,77 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*"
+
+jobs:
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - arch: x86_64
+            os: debian
+            os-version: bookworm
+          - arch: aarch64
+            os: debian
+            os-version: bookworm
+          - arch: armv7
+            os: debian
+            os-version: bookworm
+          - arch: x86_64
+            os: freebsd
+            os-version: '14.3'
+    uses: ./.github/workflows/build.yml
+    with:
+      arch: ${{ matrix.arch }}
+      os: ${{ matrix.os }}
+      os-version: ${{ matrix.os-version }}
+      cmake-args: -DCMAKE_BUILD_TYPE=Release
+      cxxflags: -Werror
+      tests: true
+      verify: true
+      package: true
+      upload: true
+
+  create-release:
+    needs: build
+    runs-on: ubuntu-24.04
+    name: Create release
+    permissions:
+      contents: write
+    env:
+      RELEASE_BODY_FILE: /tmp/rel-body.md
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+        with:
+          fetch-tags: true
+          ref: ${{ github.ref }}
+
+      - name: Write release body
+        run: git tag -l --format='%(contents:body)' ${{ github.ref_name }} | sed -z 's/\n$//' | tee ${{ env.RELEASE_BODY_FILE }}
+
+      - name: Download artifacts
+        uses: actions/download-artifact@v7
+        with:
+          path: artifacts/
+          merge-multiple: true
+
+      - name: List artifacts
+        run: ls -l artifacts
+
+      - name: Create release
+        uses: ncipollo/release-action@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          name: ${{ github.ref_name }}
+          bodyFile: ${{ env.RELEASE_BODY_FILE }}
+          draft: true
+          makeLatest: true
+          prerelease: false
+          immutableCreate: true
+          artifactErrorsFailBuild: true
+          artifacts: artifacts/*

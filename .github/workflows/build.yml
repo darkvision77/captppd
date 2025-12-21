@@ -1,0 +1,353 @@
+name: Build
+
+on:
+  workflow_call:
+    inputs:
+      arch:
+        required: true
+        type: string
+      os:
+        required: true
+        type: string
+      os-version:
+        required: true
+        type: string
+
+      cmake-args:
+        required: false
+        type: string
+      cmake-test-args:
+        required: false
+        type: string
+        default: -DCAPTPPD_BUILD_TESTS=ON
+      cxxflags:
+        required: false
+        type: string
+
+      tests:
+        required: false
+        type: boolean
+        default: false
+      verify:
+        required: false
+        type: boolean
+        default: false
+      package:
+        required: false
+        type: boolean
+        default: false
+      upload:
+        required: false
+        type: boolean
+        default: false
+
+      debian-deps:
+        required: false
+        type: string
+        default: git build-essential pkg-config ninja-build cups cups-ppdc libcups2-dev libusb-1.0-0-dev cmake dpkg-dev
+      freebsd-deps:
+        required: false
+        type: string
+        default: git ninja googletest pkgconf llvm-devel cups cmake
+      openbsd-deps:
+        required: false
+        type: string
+        default: git cmake gtest ninja pkgconf cups cups-libs libusb1
+
+      lpadmin-cmd:
+        required: false
+        type: string
+        default: lpadmin -p LBP3200 -E -v 'captusb://Canon/LBP3200?serial=00000000' -m LBP3200CAPTPPD.ppd || (cat /var/log/cups/error_log && false)
+
+jobs:
+  build-ubuntu:
+    if: inputs.os == 'ubuntu' && inputs.arch == 'x86_64'
+    runs-on: ubuntu-${{ inputs.os-version }}
+    name: Build on Ubuntu ${{ inputs.os-version }} (${{ inputs.arch }})
+    steps:
+      - name: Install deps
+        run: |
+          sudo apt-get update -y
+          sudo apt-get install -y ${{ inputs.debian-deps }}
+
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - name: Configure
+        run: cmake -G Ninja -S. -B build ${{ inputs.cmake-args }} ${{ inputs.tests && inputs.cmake-test-args }} -DCMAKE_CXX_FLAGS="${{ inputs.cxxflags }}"
+
+      - name: Compile
+        run: cmake --build build -v -j
+
+      - name: Run tests
+        if: inputs.tests
+        run: ctest --test-dir build --output-on-failure -j
+
+      - name: Package
+        if: inputs.package
+        run: cd build && cpack --verbose -G DEB
+
+      - name: Start CUPS service
+        if: inputs.verify
+        run: sudo systemctl start cups
+
+      - name: Ensure not installed
+        if: inputs.verify
+        run: set +e; sudo ${{ inputs.lpadmin-cmd }}; [ $? -eq 0 ] && exit 1 || true
+
+      - name: Verify (install package)
+        if: inputs.verify && inputs.package
+        run: sudo dpkg -i build/package/*.deb
+
+      - name: Verify (install)
+        if: inputs.verify && !inputs.package
+        run: sudo cmake --install build
+
+      - name: Verify (lpadmin)
+        if: inputs.verify
+        run: sudo ${{ inputs.lpadmin-cmd }}
+
+      - name: Verify (backend version)
+        if: inputs.verify
+        run: sudo $(cups-config --serverbin)/backend/captusb --version
+
+      - name: List packages
+        if: inputs.package
+        run: ls -l build/package/*.deb
+
+      - name: Upload artifact
+        if: inputs.package && inputs.upload
+        uses: actions/upload-artifact@v6
+        with:
+          name: ubuntu-${{ inputs.os-version }}-amd64
+          path: build/package/*.deb
+          if-no-files-found: error
+
+  build-deb:
+    if: inputs.os == 'debian' && inputs.arch == 'x86_64'
+    runs-on: ubuntu-24.04
+    container:
+      image: debian:${{ inputs.os-version }}
+    name: Build on Debian ${{ inputs.os-version }} (${{ inputs.arch }})
+    steps:
+      - name: Install deps
+        run: |
+          apt-get update -y
+          apt-get install -y ${{ inputs.debian-deps }}
+
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - name: Configure
+        run: cmake -G Ninja -S. -B build ${{ inputs.cmake-args }} ${{ inputs.tests && inputs.cmake-test-args }} -DCMAKE_CXX_FLAGS="${{ inputs.cxxflags }}"
+
+      - name: Compile
+        run: cmake --build build -v -j
+
+      - name: Run tests
+        if: inputs.tests
+        run: ctest --test-dir build --output-on-failure -j
+
+      - name: Package
+        if: inputs.package
+        run: cd build && cpack --verbose -G DEB
+
+      - name: Start CUPS service
+        if: inputs.verify
+        run: /usr/sbin/cupsd
+
+      - name: Ensure not installed
+        if: inputs.verify
+        run: set +e; ${{ inputs.lpadmin-cmd }}; [ $? -eq 0 ] && exit 1 || true
+
+      - name: Verify (install package)
+        if: inputs.verify && inputs.package
+        run: dpkg -i build/package/*.deb
+
+      - name: Verify (install)
+        if: inputs.verify && !inputs.package
+        run: cmake --install build
+
+      - name: Verify (lpadmin)
+        if: inputs.verify
+        run: ${{ inputs.lpadmin-cmd }}
+
+      - name: Verify (backend version)
+        if: inputs.verify
+        run: $(cups-config --serverbin)/backend/captusb --version
+
+      - name: List packages
+        if: inputs.package
+        run: ls -l build/package/*.deb
+
+      - name: Upload artifact
+        if: inputs.package && inputs.upload
+        uses: actions/upload-artifact@v6
+        with:
+          name: debian-${{ inputs.os-version }}-amd64
+          path: build/package/*.deb
+          if-no-files-found: error
+
+  build-deb-arm:
+    if: inputs.os == 'debian' && inputs.arch != 'x86_64'
+    runs-on: ubuntu-24.04
+    name: Build on Debian ${{ inputs.os-version }} (${{ inputs.arch }})
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - name: Build
+        uses: uraimo/run-on-arch-action@v3
+        with:
+          arch: ${{ inputs.arch }}
+          distro: ${{ inputs.os-version }}
+          setup: |
+            mkdir -p "$PWD/artifacts"
+          dockerRunArgs: |
+            --volume "$PWD/artifacts:/artifacts"
+          install: |
+            uname -a
+            apt-get update -y
+            apt-get install -y ${{ inputs.debian-deps }}
+          run: |
+            cmake -G Ninja -S. -B build ${{ inputs.cmake-args }} ${{ inputs.tests && inputs.cmake-test-args }} -DCMAKE_CXX_FLAGS="${{ inputs.cxxflags }}"
+            cmake --build build -v -j
+            ${{ inputs.tests && 'ctest --test-dir build --output-on-failure -j' || '' }}
+            ${{ inputs.package && 'cd build && cpack --verbose -G DEB && cd ..' || '' }}
+            ${{ inputs.verify && '/usr/sbin/cupsd' || '' }}
+            if [ ${{ inputs.verify && '1' || '0' }} -eq 1 ]; then set +e; ${{ inputs.lpadmin-cmd }}; [ $? -eq 0 ] && exit 1 || true; set -e;  fi
+            ${{ inputs.verify && inputs.package && 'dpkg -i build/package/*.deb' || '' }}
+            ${{ inputs.verify && !inputs.package && 'cmake --install build' || '' }}
+            ${{ inputs.verify && inputs.lpadmin-cmd || '' }}
+            ${{ inputs.verify && '$(cups-config --serverbin)/backend/captusb --version' || '' }}
+            ${{ inputs.package && 'mv build/package/*.deb /artifacts/ && ls -l /artifacts' || '' }}
+
+      - name: List packages
+        if: inputs.package
+        run: ls -l artifacts/*.deb
+
+      - name: Upload artifacts
+        if: inputs.package && inputs.upload
+        uses: actions/upload-artifact@v6
+        with:
+          name: debian-${{ inputs.os-version }}-${{ inputs.arch }}
+          path: artifacts/*.deb
+          if-no-files-found: error
+
+  build-freebsd:
+    if: inputs.os == 'freebsd'
+    defaults:
+      run:
+        shell: freebsd {0}
+    name: Build on FreeBSD ${{ inputs.os-version }}-RELEASE (${{ inputs.arch }})
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - name: Run FreeBSD VM
+        uses: vmactions/freebsd-vm@v1
+        with:
+          release: ${{ inputs.os-version }}
+          arch: ${{ inputs.arch }}
+          prepare: |
+            pkg install -y ${{ inputs.freebsd-deps }}
+            git config --global --add safe.directory '*'
+          sync: nfs
+
+      - name: Configure
+        run: cmake -G Ninja -S $GITHUB_WORKSPACE -B $GITHUB_WORKSPACE/build ${{ inputs.cmake-args }} ${{ inputs.tests && inputs.cmake-test-args }} -DCMAKE_CXX_FLAGS="${{ inputs.cxxflags }}"
+
+      - name: Compile
+        run: cmake --build $GITHUB_WORKSPACE/build -v -j
+
+      - name: Run tests
+        if: inputs.tests
+        run: ctest --test-dir $GITHUB_WORKSPACE/build --output-on-failure -j
+
+      - name: Package
+        if: inputs.package
+        run: cd $GITHUB_WORKSPACE/build && cpack --verbose -G FREEBSD
+
+      - name: Start CUPS service
+        if: inputs.verify
+        run: service cupsd onestart
+
+      - name: Ensure not installed
+        if: inputs.verify
+        run: set +e; ${{ inputs.lpadmin-cmd }}; [ $? -eq 0 ] && exit 1 || true
+
+      - name: Verify (install package)
+        if: inputs.verify && inputs.package
+        run: pkg install -y $GITHUB_WORKSPACE/build/package/*.pkg
+
+      - name: Verify (install)
+        if: inputs.verify && !inputs.package
+        run: cmake --install $GITHUB_WORKSPACE/build
+
+      - name: Verify (lpadmin)
+        if: inputs.verify
+        run: ${{ inputs.lpadmin-cmd }}
+
+      - name: Verify (backend version)
+        if: inputs.verify
+        run: $(cups-config --serverbin)/backend/captusb --version
+
+      - name: List packages
+        if: inputs.package
+        run: ls -l $GITHUB_WORKSPACE/build/package/*.pkg
+
+      - name: Upload artifacts
+        if: inputs.package && inputs.upload
+        uses: actions/upload-artifact@v6
+        with:
+          name: freebsd-${{ inputs.os-version }}-${{ inputs.arch }}
+          path: ${{ github.workspace }}/build/package/*.pkg
+          if-no-files-found: error
+
+  build-openbsd:
+    if: inputs.os == 'openbsd'
+    defaults:
+      run:
+        shell: openbsd {0}
+    name: Build on OpenBSD ${{ inputs.os-version }} (${{ inputs.arch }})
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - name: Run OpenBSD VM
+        uses: vmactions/openbsd-vm@v1
+        with:
+          release: ${{ inputs.os-version }}
+          arch: ${{ inputs.arch }}
+          prepare: |
+            pkg_add ${{ inputs.openbsd-deps }}
+            git config --global --add safe.directory '*'
+          sync: nfs
+
+      - name: Configure
+        run: cmake -G Ninja -S $GITHUB_WORKSPACE -B $GITHUB_WORKSPACE/build ${{ inputs.cmake-args }} ${{ inputs.tests && inputs.cmake-test-args }} -DCMAKE_CXX_FLAGS="${{ inputs.cxxflags }}"
+
+      - name: Compile
+        run: cmake --build $GITHUB_WORKSPACE/build -v -j
+
+      - name: Run tests
+        if: inputs.tests
+        run: ctest --test-dir $GITHUB_WORKSPACE/build --output-on-failure -j
+
+      - name: Start CUPS service
+        if: inputs.verify
+        run: rcctl start cupsd
+
+      - name: Verify (install)
+        if: inputs.verify
+        run: cmake --install $GITHUB_WORKSPACE/build
+
+      - name: Verify (lpadmin)
+        if: inputs.verify
+        run: ${{ inputs.lpadmin-cmd }}
+
+      - name: Verify (backend version)
+        if: inputs.verify
+        run: $(cups-config --serverbin)/backend/captusb --version

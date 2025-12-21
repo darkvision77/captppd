@@ -1,151 +1,47 @@
 name: Core tests
+
 on: [push, pull_request]
 
 jobs:
-  Ubuntu:
+  build-and-test:
     strategy:
       fail-fast: false
       matrix:
-        os:
-          - "22.04"
-          - "24.04"
-    name: Ubuntu ${{ matrix.os }}
-    runs-on: ubuntu-${{ matrix.os }}
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
+        include:
+          - arch: x86_64
+            os: ubuntu
+            os-version: '22.04'
+          - arch: x86_64
+            os: ubuntu
+            os-version: '24.04'
 
-      - name: Install apt packages
-        run: |
-          sudo apt-get update -y --fix-missing
-          sudo apt-get install -y gcc pkg-config ninja-build cups cups-ppdc libcups2-dev libusb-1.0-0-dev cmake
+          - arch: x86_64
+            os: debian
+            os-version: bookworm
+          - arch: x86_64
+            os: debian
+            os-version: trixie
+          - arch: aarch64
+            os: debian
+            os-version: bookworm
+          - arch: armv7
+            os: debian
+            os-version: bookworm
 
-      - name: Start CUPS service
-        run: sudo systemctl start cups
-
-      - name: Configure
-        run: cmake -G Ninja -S. -B build -DCAPTPPD_SANITIZE=ON -DCAPTPPD_BUILD_TESTS=ON
-
-      - name: Compile
-        run: cmake --build build -v -j
-
-      - name: Run tests
-        run: ctest --test-dir build --output-on-failure -j
-
-      - name: Install
-        run: sudo cmake --install build
-
-      - name: Verify install with lpadmin
-        run: sudo lpadmin -p LBP3200 -E -v 'captusb://Canon/LBP3200?serial=00000000' -m LBP3200CAPTPPD.ppd || (cat /var/log/cups/error_log && false)
-
-  Debian:
-    needs: Ubuntu
-    strategy:
-      fail-fast: false
-      matrix:
-        os-version:
-          - "12"
-          - "13"
-    name: Debian ${{ matrix.os-version }}
-    runs-on: ubuntu-24.04
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-      - name: Set up Docker
-        uses: docker/setup-buildx-action@v3
-      - name: Run Debian container
-        run: |
-          docker run --rm -v $(pwd):/workspace -w /workspace debian:${{ matrix.os-version }}-slim /bin/bash -c "
-          set -eou pipefail
-          export GITHUB_ACTIONS=true
-          apt-get update -y --fix-missing
-          apt-get install -y gcc libgtest-dev libgmock-dev pkg-config ninja-build cups cups-ppdc libcups2-dev libusb-1.0-0-dev git cmake
-          /usr/sbin/cupsd
-          cmake -G Ninja -S. -B build -DCAPTPPD_SANITIZE=ON -DCAPTPPD_BUILD_TESTS=ON
-          cmake --build build -v -j
-          ctest --test-dir build --output-on-failure -j
-          cmake --install build
-          lpadmin -p LBP3200 -E -v 'captusb://Canon/LBP3200?serial=00000000' -m LBP3200CAPTPPD.ppd || (cat /var/log/cups/error_log && false)
-          "
-
-  FreeBSD:
-    needs: Ubuntu
-    strategy:
-      fail-fast: false
-      matrix:
-        release:
-          - "14.3"
-    defaults:
-      run:
-        shell: freebsd {0}
-    name: FreeBSD ${{ matrix.release }}-RELEASE
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Start FreeBSD VM
-        uses: vmactions/freebsd-vm@v1
-        with:
-          release: ${{ matrix.release }}
-          prepare: pkg install -y ninja googletest pkgconf llvm-devel cups git cmake
-          envs: 'GITHUB_ACTIONS'
-
-      - name: Start CUPS service
-        run: service cupsd onestart
-
-      - name: Configure
-        run: cmake -G Ninja -S $GITHUB_WORKSPACE -B $GITHUB_WORKSPACE/build -DCAPTPPD_SANITIZE=ON -DCAPTPPD_BUILD_TESTS=ON
-
-      - name: Compile
-        run: cmake --build $GITHUB_WORKSPACE/build -v -j
-
-      - name: Run tests
-        run: ctest --test-dir $GITHUB_WORKSPACE/build --output-on-failure -j
-
-      - name: Install
-        run: cmake --install $GITHUB_WORKSPACE/build
-
-      - name: Verify install with lpadmin
-        run: lpadmin -p LBP3200 -E -v 'captusb://Canon/LBP3200?serial=00000000' -m LBP3200CAPTPPD.ppd || (cat /var/log/cups/error_log && false)
-
-  OpenBSD:
-    needs: Ubuntu
-    strategy:
-      fail-fast: false
-      matrix:
-        release:
-          - "7.7"
-    defaults:
-      run:
-        shell: openbsd {0}
-    name: OpenBSD ${{ matrix.release }}
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Run OpenBSD VM
-        uses: vmactions/openbsd-vm@v1
-        with:
-          release: ${{ matrix.release }}
-          prepare: pkg_add cmake gtest ninja pkgconf cups cups-libs git libusb1
-          envs: 'GITHUB_ACTIONS'
-
-      - name: Start CUPS service
-        run: rcctl start cupsd
-
-      - name: Configure
-        run: cmake -G Ninja -S $GITHUB_WORKSPACE -B $GITHUB_WORKSPACE/build -DCAPTPPD_BUILD_TESTS=ON
-
-      - name: Compile
-        run: cmake --build $GITHUB_WORKSPACE/build -v -j
-
-      - name: Run tests
-        run: ctest --test-dir $GITHUB_WORKSPACE/build --output-on-failure -j
-
-      - name: Install
-        run: cmake --install $GITHUB_WORKSPACE/build
-
-      - name: Verify install with lpadmin
-        run: lpadmin -p LBP3200 -E -v 'captusb://Canon/LBP3200?serial=00000000' -m LBP3200CAPTPPD.ppd || (cat /var/log/cups/error_log && false)
+          - arch: x86_64
+            os: freebsd
+            os-version: '14.3'
+          - arch: x86_64
+            os: openbsd
+            os-version: '7.7'
+    uses: ./.github/workflows/build.yml
+    with:
+      arch: ${{ matrix.arch }}
+      os: ${{ matrix.os }}
+      os-version: ${{ matrix.os-version }}
+      cmake-args: ${{ matrix.os != 'openbsd' && matrix.arch == 'x86_64' && '-DCAPTPPD_SANITIZE=ON' || '' }}
+      cxxflags: -Werror
+      tests: true
+      verify: true
+      package: false
+      upload: false
