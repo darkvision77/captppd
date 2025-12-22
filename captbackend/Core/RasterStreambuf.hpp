@@ -1,6 +1,4 @@
-#ifndef _CAPTBACKEND_CORE_RASTER_STREAMBUF_HPP_
-#define _CAPTBACKEND_CORE_RASTER_STREAMBUF_HPP_
-
+#pragma once
 #include <streambuf>
 #include <optional>
 #include <libcapt/Protocol/PageParams.hpp>
@@ -10,5 +8,3 @@ public:
     virtual ~RasterStreambuf() noexcept = default;
     virtual std::optional<Capt::Protocol::PageParams> NextPage() = 0;
 };
-
-#endif

@@ -1,6 +1,4 @@
-#ifndef _CAPTBACKEND_CORE_STOP_TOKEN_HPP_
-#define _CAPTBACKEND_CORE_STOP_TOKEN_HPP_
-
+#pragma once
 #include "Config.hpp"
 
 #if HAVE_STOP_TOKEN
@@ -63,5 +61,4 @@ inline bool StopToken::stop_requested() const noexcept {
     return this->src->stop_requested();
 }
 
-#endif
 #endif

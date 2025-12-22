@@ -1,6 +1,4 @@
-#ifndef _CAPTBACKEND_USB_BACKEND_USB_STREAMBUF_HPP_
-#define _CAPTBACKEND_USB_BACKEND_USB_STREAMBUF_HPP_
-
+#pragma once
 #include "UsbPrinter.hpp"
 #include <streambuf>
 #include <libusb.h>
@@ -22,5 +20,3 @@ private:
 public:
     explicit UsbStreambuf(UsbPrinter& printer, std::size_t buffSize = 65535, unsigned timeoutMs = 5000);
 };
-
-#endif

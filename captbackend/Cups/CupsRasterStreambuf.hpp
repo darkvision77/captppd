@@ -1,6 +1,4 @@
-#ifndef _CAPTBACKEND_CUPS_CUPS_RASTER_STREAMBUF_HPP_
-#define _CAPTBACKEND_CUPS_CUPS_RASTER_STREAMBUF_HPP_
-
+#pragma once
 #include "Core/RasterStreambuf.hpp"
 #include <cups/raster.h>
 #include <streambuf>
@@ -24,5 +22,3 @@ public:
 
     std::optional<Capt::Protocol::PageParams> NextPage() override;
 };
-
-#endif

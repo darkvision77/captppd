@@ -1,6 +1,4 @@
-#ifndef _CAPTBACKEND_USB_BACKEND_USB_BACKEND_HPP_
-#define _CAPTBACKEND_USB_BACKEND_USB_BACKEND_HPP_
-
+#pragma once
 #include "UsbPrinter.hpp"
 #include <libusb.h>
 #include <vector>
@@ -16,5 +14,3 @@ public:
     void Init();
     [[nodiscard]] std::vector<UsbPrinter> GetPrinters();
 };
-
-#endif

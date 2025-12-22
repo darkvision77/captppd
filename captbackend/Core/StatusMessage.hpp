@@ -1,6 +1,4 @@
-#ifndef _CAPTBACKEND_CORE_STATUS_MESSAGE_HPP_
-#define _CAPTBACKEND_CORE_STATUS_MESSAGE_HPP_
-
+#pragma once
 #include <string_view>
 #include <libcapt/Protocol/ExtendedStatus.hpp>
 
@@ -56,5 +54,3 @@ inline constexpr std::string_view MsgCleaning = "Cleaning";
     }
     return MsgReady;
 }
-
-#endif

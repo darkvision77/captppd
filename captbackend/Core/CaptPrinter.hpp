@@ -1,6 +1,4 @@
-#ifndef _CAPTBACKEND_CORE_CAPT_PRINTER_HPP_
-#define _CAPTBACKEND_CORE_CAPT_PRINTER_HPP_
-
+#pragma once
 #include "RasterStreambuf.hpp"
 #include "StateReporter.hpp"
 #include "StopToken.hpp"
@@ -28,5 +26,3 @@ public:
     bool Print(StopTokenType stopToken, RasterStreambuf& rasterStr);
     bool Clean(StopTokenType stopToken);
 };
-
-#endif

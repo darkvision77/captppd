@@ -1,6 +1,4 @@
-#ifndef _CAPTBACKEND_CORE_LOG_HPP_
-#define _CAPTBACKEND_CORE_LOG_HPP_
-
+#pragma once
 #include <iostream>
 #include <string_view>
 
@@ -39,5 +37,3 @@ namespace Log {
     inline StreamTerminator Error() { return Log("ERROR"); }
     inline StreamTerminator Critical() { return Log("CRIT"); }
 }
-
-#endif

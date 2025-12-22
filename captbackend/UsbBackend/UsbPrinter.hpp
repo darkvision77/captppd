@@ -1,6 +1,4 @@
-#ifndef _CAPTBACKEND_USB_BACKEND_USB_DEVICE_HPP_
-#define _CAPTBACKEND_USB_BACKEND_USB_DEVICE_HPP_
-
+#pragma once
 #include "Core/PrinterInfo.hpp"
 #include <libusb.h>
 #include <memory>
@@ -61,5 +59,3 @@ public:
 
     [[nodiscard]] std::optional<PrinterInfo> GetPrinterInfo();
 };
-
-#endif

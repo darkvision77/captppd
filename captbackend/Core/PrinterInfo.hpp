@@ -1,6 +1,4 @@
-#ifndef _CAPTBACKEND_CORE_PRINTER_INFO_HPP_
-#define _CAPTBACKEND_CORE_PRINTER_INFO_HPP_
-
+#pragma once
 #include <ostream>
 #include <string>
 #include <string_view>
@@ -63,5 +61,3 @@ struct PrinterInfo {
 
     void Report(std::ostream& stream) const;
 };
-
-#endif

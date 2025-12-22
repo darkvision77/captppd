@@ -1,6 +1,4 @@
-#ifndef _CAPTBACKEND_CORE_STATE_REPORTER_HPP_
-#define _CAPTBACKEND_CORE_STATE_REPORTER_HPP_
-
+#pragma once
 #include <ostream>
 #include <libcapt/Protocol/ExtendedStatus.hpp>
 #include <string_view>
@@ -22,5 +20,3 @@ public:
 
     void Page(unsigned page);
 };
-
-#endif
