@@ -9,7 +9,7 @@
 using int_type = UsbStreambuf::int_type;
 
 UsbStreambuf::UsbStreambuf(UsbPrinter& printer, std::size_t buffSize, unsigned timeoutMs)
-    : printer(printer), rbuff(buffSize), wbuff(buffSize), timeoutMs(timeoutMs) {
+    : printer(printer), rbuff(1024), wbuff(buffSize), timeoutMs(timeoutMs) {
     char_type* wstart = this->wbuff.data();
     char_type* wend = wstart + this->wbuff.size() - 1;
     this->setp(wstart, wend);
