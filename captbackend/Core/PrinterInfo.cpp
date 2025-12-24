@@ -14,6 +14,44 @@ constexpr bool nextCmp(Iter& iter, std::string_view target) noexcept {
     return str == target;
 }
 
+// Helper function for comparing URI component with URL decoding (%20 -> space)
+template<typename Iter>
+bool nextCmpDecoded(Iter& iter, Iter end, std::string_view target) noexcept {
+    for (char expected : target) {
+        if (iter == end) {
+            return false;
+        }
+        if (*iter == '%' && std::distance(iter, end) >= 3 &&
+            *(iter + 1) == '2' && *(iter + 2) == '0') {
+            // Decode %20 as space
+            if (expected != ' ') {
+                return false;
+            }
+            iter += 3;
+        } else {
+            if (*iter != expected) {
+                return false;
+            }
+            ++iter;
+        }
+    }
+    return true;
+}
+
+// Helper function to URL-encode spaces as %20
+std::string urlEncodeSpaces(const std::string& str) {
+    std::string result;
+    result.reserve(str.size());
+    for (char c : str) {
+        if (c == ' ') {
+            result += "%20";
+        } else {
+            result += c;
+        }
+    }
+    return result;
+}
+
 bool PrinterInfo::IsCaptPrinter() const noexcept {
     return this->CmdVersion.starts_with('1') && this->CommandSet == "CAPT";
 }
@@ -22,7 +60,7 @@ std::ostream& PrinterInfo::WriteUri(std::ostream& os) const {
     if (os.good()) {
         // The URI must differ from the one issued by cups usb backend,
         // otherwise CUPS will not show our backend in the web UI.
-        os << CAPTBACKEND_NAME "://" << this->Manufacturer << '/' << this->Model << "?drv=capt&serial=" << this->Serial;
+        os << CAPTBACKEND_NAME "://" << this->Manufacturer << '/' << urlEncodeSpaces(this->Model) << "?drv=capt&serial=" << this->Serial;
     }
     return os;
 }
@@ -34,11 +72,12 @@ bool PrinterInfo::HasUri(std::string_view uri) const {
         return false;
     }
     auto iter = uri.cbegin();
+    auto end = uri.cend();
     if (!nextCmp(iter, proto)
         || !nextCmp(iter, this->Manufacturer)
         || *iter++ != '/'
-        || !nextCmp(iter, this->Model)
-        || *iter++ != '?') {
+        || !nextCmpDecoded(iter, end, this->Model)
+        || iter == end || *iter++ != '?') {
         return false;
     }
 
