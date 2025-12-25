@@ -98,10 +98,10 @@ std::optional<Capt::Protocol::ExtendedStatus> CaptPrinter::WritePage(StopTokenTy
 }
 
 // Has value if error
-std::optional<Capt::Protocol::ExtendedStatus> CaptPrinter::WaitLastPage(StopTokenType stopToken, Capt::Utility::BufferedPage& page) {
+std::optional<Capt::Protocol::ExtendedStatus> CaptPrinter::WaitLastPage(StopTokenType stopToken, Capt::Utility::BufferedPage& page, unsigned pageNum) {
     while (!stopToken.stop_requested()) {
         std::this_thread::sleep_for(1s);
-        auto status = this->WaitPrintEnd(stopToken);
+        auto status = this->WaitPrintEnd(stopToken, pageNum);
         if (!status) {
             return std::nullopt;
         }
@@ -116,6 +116,10 @@ std::optional<Capt::Protocol::ExtendedStatus> CaptPrinter::WaitLastPage(StopToke
         }
     }
     return std::nullopt;
+}
+
+std::optional<Capt::Protocol::ExtendedStatus> CaptPrinter::WaitLastPage(StopTokenType stopToken, Capt::Utility::BufferedPage& page) {
+    return CaptPrinter::WaitLastPage(stopToken, page, 0);
 }
 
 bool CaptPrinter::Print(StopTokenType stopToken, RasterStreambuf& rasterStr) {
@@ -150,7 +154,7 @@ bool CaptPrinter::Print(StopTokenType stopToken, RasterStreambuf& rasterStr) {
 
     Log::Info() << "Waiting for last page...";
     if (page != 0) {
-        auto res = this->WaitLastPage(stopToken, prevPage);
+        auto res = this->WaitLastPage(stopToken, prevPage, page);
         if (res.has_value()) {
             Log::Debug() << "WaitLastPage failed: " << *res;
             Log::Critical() << "Failed to write page (" << StatusMessage(*res) << ')';

@@ -23,6 +23,7 @@ public:
     std::optional<Capt::Protocol::ExtendedStatus> WritePage(StopTokenType stopToken, Capt::Utility::BufferedPage& page, Capt::Utility::BufferedPage* prev);
 
     // Has value if error
+    std::optional<Capt::Protocol::ExtendedStatus> WaitLastPage(StopTokenType stopToken, Capt::Utility::BufferedPage& page, unsigned pageNum);
     std::optional<Capt::Protocol::ExtendedStatus> WaitLastPage(StopTokenType stopToken, Capt::Utility::BufferedPage& page);
 
     bool Print(StopTokenType stopToken, RasterStreambuf& rasterStr);
