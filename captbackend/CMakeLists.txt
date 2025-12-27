@@ -3,7 +3,7 @@ include(CheckCXXSourceCompiles)
 check_cxx_source_compiles("
 #include <stop_token>
 int main() {
-    std::stop_token token;
+    [[maybe_unused]] std::stop_token token;
     return 0;
 }
 " HAVE_STOP_TOKEN)
