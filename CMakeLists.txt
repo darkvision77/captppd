@@ -15,7 +15,7 @@ set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 option(CAPTPPD_BUILD_TESTS "Build tests" OFF)
 option(CAPTPPD_COVERAGE "Enable code coverage" OFF)
 option(CAPTPPD_SANITIZE "Enable address and undefined sanitizers" OFF)
-option(CAPTPPD_DITHERING_OPT "Enable dithering option in PPD" OFF)
+option(CAPTPPD_DITHERING_OPT "Enable dithering option in PPD" ON)
 option(CAPTPPD_LTO "Enable LTO" OFF)
 set(CAPTPPD_BACKEND_NAME "captusb" CACHE STRING "Backend name")
 
