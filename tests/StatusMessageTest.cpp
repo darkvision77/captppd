@@ -4,7 +4,7 @@
 #include <utility>
 #include <type_traits>
 
-using namespace Capt::Protocol;
+using namespace Capt;
 
 struct Status {
     std::underlying_type_t<BasicStatus> Basic = 0;

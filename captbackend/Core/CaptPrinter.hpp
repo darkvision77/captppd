@@ -12,16 +12,16 @@ private:
 public:
     explicit CaptPrinter(std::iostream& stream, StateReporter& reporter) noexcept;
 
-    Capt::Protocol::ExtendedStatus GetStatus() override;
+    Capt::ExtendedStatus GetStatus() override;
 
-    Capt::Protocol::ExtendedStatus WaitReady(StopTokenType stopToken);
+    Capt::ExtendedStatus WaitReady(StopTokenType stopToken);
     void PrepareBeforePrint(StopTokenType stopToken, unsigned page);
 
     // Has value if error
-    std::optional<Capt::Protocol::ExtendedStatus> WritePage(StopTokenType stopToken, Capt::Utility::BufferedPage& page, Capt::Utility::BufferedPage* prev);
+    std::optional<Capt::ExtendedStatus> WritePage(StopTokenType stopToken, Capt::Utility::BufferedPage& page, Capt::Utility::BufferedPage* prev);
 
     // Has value if error
-    std::optional<Capt::Protocol::ExtendedStatus> WaitLastPage(StopTokenType stopToken, Capt::Utility::BufferedPage& page);
+    std::optional<Capt::ExtendedStatus> WaitLastPage(StopTokenType stopToken, Capt::Utility::BufferedPage& page);
 
     bool Print(StopTokenType stopToken, RasterStreambuf& rasterStr);
     bool Clean(StopTokenType stopToken);

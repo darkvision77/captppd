@@ -60,7 +60,7 @@ void CupsRasterStreambuf::Close() noexcept {
     }
 }
 
-std::optional<Capt::Protocol::PageParams> CupsRasterStreambuf::NextPage() {
+std::optional<Capt::PageParams> CupsRasterStreambuf::NextPage() {
     assert(this->raster != nullptr);
     assert(this->linesRemain == 0);
     cups_page_header2_t header;
@@ -77,11 +77,11 @@ std::optional<Capt::Protocol::PageParams> CupsRasterStreambuf::NextPage() {
     Log::Debug() << "Read header " << header.cupsBytesPerLine << 'x' << header.cupsHeight << " (" << header.cupsPageSizeName << ')';
     this->linesRemain = header.cupsHeight;
     this->lineBuffer.resize(header.cupsBytesPerLine);
-    return Capt::Protocol::PageParams{
+    return Capt::PageParams{
         .PaperSize = static_cast<uint8_t>(header.cupsInteger[4]),
         .TonerDensity = static_cast<uint8_t>(header.cupsCompression),
         .Mode = static_cast<uint8_t>(header.cupsMediaType),
-        .Resolution = header.HWResolution[0] == 600 ? Capt::Protocol::RES_600 : Capt::Protocol::RES_300,
+        .Resolution = header.HWResolution[0] == 600 ? Capt::ResolutionIdx::RES_600 : Capt::ResolutionIdx::RES_300,
         .SmoothEnable = header.cupsInteger[5] != 0,
         .TonerSaving = header.cupsInteger[6] != 0,
         .MarginLeft = static_cast<uint16_t>(header.cupsInteger[0]),

@@ -8,7 +8,7 @@
 
 using namespace std::literals::chrono_literals;
 
-static inline Capt::Utility::CropStreambuf crop(RasterStreambuf& rasterStr, Capt::Protocol::PageParams& params) noexcept {
+static inline Capt::Utility::CropStreambuf crop(RasterStreambuf& rasterStr, Capt::PageParams& params) noexcept {
     uint16_t lineSize = Capt::Utility::CropLineSize(params.ImageLineSize, params.PaperWidth);
     uint16_t lines = Capt::Utility::CropLinesCount(params.ImageLines, params.PaperHeight);
     Capt::Utility::CropStreambuf cropStr(rasterStr, params.ImageLineSize, params.ImageLines, lineSize, lines);
@@ -22,14 +22,14 @@ static inline Capt::Utility::CropStreambuf crop(RasterStreambuf& rasterStr, Capt
 CaptPrinter::CaptPrinter(std::iostream& stream, StateReporter& reporter) noexcept
     : Capt::BasicCaptPrinter<StopTokenType>(stream), reporter(reporter) {}
 
-Capt::Protocol::ExtendedStatus CaptPrinter::GetStatus() {
-    Capt::Protocol::ExtendedStatus status = this->Capt::BasicCaptPrinter<StopTokenType>::GetStatus();
+Capt::ExtendedStatus CaptPrinter::GetStatus() {
+    Capt::ExtendedStatus status = this->Capt::BasicCaptPrinter<StopTokenType>::GetStatus();
     this->reporter.Update(status);
     return status;
 }
 
-Capt::Protocol::ExtendedStatus CaptPrinter::WaitReady(StopTokenType stopToken) {
-    Capt::Protocol::ExtendedStatus status = this->GetStatus();
+Capt::ExtendedStatus CaptPrinter::WaitReady(StopTokenType stopToken) {
+    Capt::ExtendedStatus status = this->GetStatus();
     while (!stopToken.stop_requested() && !status.Ready()) {
         if (status.ClearErrorNeeded()) {
             Log::Debug() << "Calling ClearError()";
@@ -45,7 +45,7 @@ Capt::Protocol::ExtendedStatus CaptPrinter::WaitReady(StopTokenType stopToken) {
 
 void CaptPrinter::PrepareBeforePrint(StopTokenType stopToken, unsigned page) {
     while (true) {
-        Capt::Protocol::ExtendedStatus status = this->WaitReady(stopToken);
+        Capt::ExtendedStatus status = this->WaitReady(stopToken);
         if (stopToken.stop_requested()) {
             return;
         }
@@ -62,23 +62,23 @@ void CaptPrinter::PrepareBeforePrint(StopTokenType stopToken, unsigned page) {
 }
 
 // Has value if error
-std::optional<Capt::Protocol::ExtendedStatus> CaptPrinter::WritePage(StopTokenType stopToken, Capt::Utility::BufferedPage& page, Capt::Utility::BufferedPage* prev) {
-    Capt::Protocol::ReprintStatus reprint = Capt::Protocol::ReprintStatus::None;
+std::optional<Capt::ExtendedStatus> CaptPrinter::WritePage(StopTokenType stopToken, Capt::Utility::BufferedPage& page, Capt::Utility::BufferedPage* prev) {
+    Capt::ReprintStatus reprint = Capt::ReprintStatus::None;
     while (!stopToken.stop_requested()) {
-        Capt::Utility::BufferedPage& p = (prev && reprint == Capt::Protocol::ReprintStatus::Prev) ? *prev : page;
+        Capt::Utility::BufferedPage& p = (prev && reprint == Capt::ReprintStatus::Prev) ? *prev : page;
         p.pubseekpos(0);
         this->PrepareBeforePrint(stopToken, p.PageNumber);
         if (stopToken.stop_requested()) {
             return std::nullopt;
         }
-        if (reprint != Capt::Protocol::ReprintStatus::None) {
+        if (reprint != Capt::ReprintStatus::None) {
             Log::Info() << "Retrying page " << (p.PageNumber + 1);
         } else {
             Log::Info() << "Writing page " << (p.PageNumber + 1);
         }
         if (this->WriteVideoData(stopToken, p.Params, p)) {
-            if (prev && reprint == Capt::Protocol::ReprintStatus::Prev) {
-                reprint = Capt::Protocol::ReprintStatus::None;
+            if (prev && reprint == Capt::ReprintStatus::Prev) {
+                reprint = Capt::ReprintStatus::None;
                 continue;
             }
             break;
@@ -98,7 +98,7 @@ std::optional<Capt::Protocol::ExtendedStatus> CaptPrinter::WritePage(StopTokenTy
 }
 
 // Has value if error
-std::optional<Capt::Protocol::ExtendedStatus> CaptPrinter::WaitLastPage(StopTokenType stopToken, Capt::Utility::BufferedPage& page) {
+std::optional<Capt::ExtendedStatus> CaptPrinter::WaitLastPage(StopTokenType stopToken, Capt::Utility::BufferedPage& page) {
     while (!stopToken.stop_requested()) {
         std::this_thread::sleep_for(1s);
         auto status = this->WaitPrintEnd(stopToken);
@@ -107,7 +107,7 @@ std::optional<Capt::Protocol::ExtendedStatus> CaptPrinter::WaitLastPage(StopToke
         }
         if (status->VideoDataError() || status->FatalError()) {
             return status;
-        } else if (status->GetReprintStatus() == Capt::Protocol::ReprintStatus::None) {
+        } else if (status->GetReprintStatus() == Capt::ReprintStatus::None) {
             break;
         }
         auto res = this->WritePage(stopToken, page, nullptr);
@@ -123,7 +123,7 @@ bool CaptPrinter::Print(StopTokenType stopToken, RasterStreambuf& rasterStr) {
     Capt::Utility::BufferedPage prevPage;
     Capt::Compression::ScoaStreambuf ss;
     while (!stopToken.stop_requested()) {
-        std::optional<Capt::Protocol::PageParams> params = rasterStr.NextPage();
+        std::optional<Capt::PageParams> params = rasterStr.NextPage();
         if (!params) {
             break;
         }
@@ -169,13 +169,13 @@ bool CaptPrinter::Clean(StopTokenType stopToken) {
         Log::Info() << "Cleaning...";
         std::this_thread::sleep_for(2s);
 
-        Capt::Protocol::ExtendedStatus status = this->GetStatus();
+        Capt::ExtendedStatus status = this->GetStatus();
         if (status.FatalError()) {
             Log::Debug() << "Clean failed: " << status;
             Log::Critical() << "Unknown fatal error";
             return false;
         }
-        if ((status.Engine & Capt::Protocol::EngineReadyStatus::CLEANING) == 0) {
+        if ((status.Engine & Capt::EngineReadyStatus::CLEANING) == 0) {
             Log::Warning() << "Cleaning failed (" << StatusMessage(status) << ')';
             continue;
         }

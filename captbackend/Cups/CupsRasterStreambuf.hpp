@@ -20,5 +20,5 @@ public:
     bool Open(const char* file = nullptr) noexcept;
     void Close() noexcept;
 
-    std::optional<Capt::Protocol::PageParams> NextPage() override;
+    std::optional<Capt::PageParams> NextPage() override;
 };

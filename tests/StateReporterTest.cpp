@@ -9,7 +9,7 @@
 #include <sstream>
 #include <string_view>
 
-using namespace Capt::Protocol;
+using namespace Capt;
 
 struct Status {
     std::underlying_type_t<BasicStatus> Basic = 0;

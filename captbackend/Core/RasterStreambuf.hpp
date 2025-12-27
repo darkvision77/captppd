@@ -6,5 +6,5 @@
 class RasterStreambuf : public virtual std::streambuf {
 public:
     virtual ~RasterStreambuf() noexcept = default;
-    virtual std::optional<Capt::Protocol::PageParams> NextPage() = 0;
+    virtual std::optional<Capt::PageParams> NextPage() = 0;
 };

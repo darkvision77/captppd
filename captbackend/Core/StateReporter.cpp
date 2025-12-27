@@ -2,7 +2,7 @@
 #include <algorithm>
 #include <string_view>
 
-using namespace Capt::Protocol;
+using namespace Capt;
 
 StateReporter::StateReporter(std::ostream& stream) noexcept : stream(stream) {}
 

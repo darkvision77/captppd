@@ -14,7 +14,7 @@ public:
         this->Clear();
     }
 
-    void Update(Capt::Protocol::ExtendedStatus status);
+    void Update(Capt::ExtendedStatus status);
     void SetReason(std::string_view reason, bool set);
     void Clear();
 
