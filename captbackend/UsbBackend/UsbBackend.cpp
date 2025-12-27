@@ -2,6 +2,7 @@
 #include "Core/Log.hpp"
 #include "UsbError.hpp"
 #include <cassert>
+#include <concepts>
 #include <iomanip>
 #include <libusb.h>
 #include <optional>
@@ -18,10 +19,12 @@ static inline bool isPrinter(const libusb_interface_descriptor& alt) noexcept {
     return alt.bInterfaceClass == LIBUSB_CLASS_PRINTER && alt.bInterfaceSubClass == 1 && alt.bInterfaceProtocol == 2;
 }
 
-static std::vector<libusb_config_descriptor_ptr> getConfigs(libusb_device* dev, const libusb_device_descriptor& desc) {
+template<typename FuncT> requires requires(FuncT&& func, libusb_config_descriptor_ptr&& conf) {
+    { func(std::move(conf)) } -> std::same_as<bool>;
+}
+static void foreachConfigs(libusb_device* dev, const libusb_device_descriptor& desc, FuncT&& func) {
     assert(dev != nullptr);
-    std::vector<libusb_config_descriptor_ptr> configs;
-    for (int i = 0; i < desc.bNumConfigurations; i++) {
+    for (unsigned i = 0; i < desc.bNumConfigurations; i++) {
         libusb_config_descriptor* conf;
         int err = libusb_get_config_descriptor(dev, i, &conf);
         if (err != LIBUSB_SUCCESS) {
@@ -29,9 +32,10 @@ static std::vector<libusb_config_descriptor_ptr> getConfigs(libusb_device* dev, 
                 << std::setw(4) << desc.idVendor << ':' << std::setw(4) << desc.idProduct << ", skipping";
             continue;
         }
-        configs.emplace_back(libusb_config_descriptor_ptr(conf, libusb_free_config_descriptor));
+        if (func(libusb_config_descriptor_ptr(conf, libusb_free_config_descriptor))) {
+            break;
+        }
     }
-    return configs;
 }
 
 static std::optional<std::pair<uint8_t, uint8_t>> getRWEndpoints(const libusb_interface_descriptor& alt) noexcept {
@@ -55,7 +59,7 @@ static std::optional<std::pair<uint8_t, uint8_t>> getRWEndpoints(const libusb_in
 
 static std::optional<libusb_interface_descriptor> findPrinterAlt(libusb_config_descriptor* conf) noexcept {
     assert(conf != nullptr);
-    for (int j = 0; j < conf->bNumInterfaces; j++) {
+    for (unsigned j = 0; j < conf->bNumInterfaces; j++) {
         for (int k = 0; k < conf->interface[j].num_altsetting; k++) {
             const libusb_interface_descriptor& alt = conf->interface[j].altsetting[k];
             if (isPrinter(alt)) {
@@ -98,18 +102,24 @@ std::vector<UsbPrinter> UsbBackend::GetPrinters() {
             continue;
         }
 
-        auto configs = getConfigs(dev.get(), desc);
-        for (auto& conf : configs) {
+        foreachConfigs(dev.get(), desc, [&](libusb_config_descriptor_ptr&& conf) {
             auto alt = findPrinterAlt(conf.get());
             if (!alt) {
-                continue;
+                return false;
             }
             auto rwEp = getRWEndpoints(*alt);
             if (!rwEp) {
-                continue;
+                return false;
             }
+            Log::Debug() << "Printer found: " << std::hex << std::setfill('0')
+                << std::setw(4) << desc.idVendor << ':' << std::setw(4) << desc.idProduct
+                << " iConfiguration=" << static_cast<int>(conf->iConfiguration)
+                << " bAlternateSetting=" << static_cast<int>(alt->bAlternateSetting)
+                << " readEp=0x" << std::hex << std::setw(2) << static_cast<int>(rwEp->first)
+                << " writeEp=0x" << std::setw(2) << static_cast<int>(rwEp->second);
             printers.emplace_back(std::move(dev), desc, std::move(conf), *alt, rwEp->first, rwEp->second);
-        }
+            return true;
+        });
     }
     return printers;
 }

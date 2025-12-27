@@ -41,7 +41,7 @@ int_type UsbStreambuf::underflow() {
         throw UsbError("read failed", err);
     }
     assert(transferred >= 0);
-    Log::Debug() << "Received " << transferred << " from device";
+    Log::Debug() << "Received " << transferred << " bytes from device";
     this->setg(start, start, start + transferred);
     return traits_type::to_int_type(*this->gptr());
 }

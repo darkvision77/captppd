@@ -30,7 +30,8 @@ private:
     void reset() noexcept;
     void release() noexcept;
     void reattachKernelDriver() noexcept;
-    void setConfig(uint8_t value);
+    void setConfig();
+    void setAltSetting();
 
     std::string getStringDescriptor(uint8_t idx);
     std::string getDeviceId();

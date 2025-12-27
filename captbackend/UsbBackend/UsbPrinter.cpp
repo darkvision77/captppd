@@ -29,6 +29,7 @@ int UsbPrinter::open() noexcept {
         Log::Debug() << "libusb_open failed: " << libusb_error_name(err);
     } else {
         this->handle.reset(handle);
+        this->reset();
     }
     return err;
 }
@@ -64,17 +65,33 @@ void UsbPrinter::detachKernelDriver() {
     }
 }
 
-void UsbPrinter::setConfig(uint8_t value) {
+void UsbPrinter::setConfig() {
     assert(this->handle.get() != nullptr);
+    assert(!this->interfaceClaimed);
     if (this->desc.bNumConfigurations == 1) {
         return;
     }
-    int err = libusb_set_configuration(this->handle.get(), value);
+    int err = libusb_set_configuration(this->handle.get(), this->config->bConfigurationValue);
     if (err != LIBUSB_SUCCESS) {
         Log::Debug() << "libusb_set_configuration failed: " << libusb_error_name(err);
         throw UsbError("failed to set device configuration", err);
     }
-    Log::Debug() << "Device configuration set to " << value;
+    Log::Debug() << "Device configuration set to " << static_cast<int>(this->config->bConfigurationValue);
+}
+
+void UsbPrinter::setAltSetting() {
+    assert(this->handle.get() != nullptr);
+    assert(this->interfaceClaimed);
+    if (this->config->interface[this->alt.bInterfaceNumber].num_altsetting == 1) {
+        return;
+    }
+    int err = libusb_set_interface_alt_setting(this->handle.get(), this->alt.bInterfaceNumber, this->alt.bAlternateSetting);
+    if (err != LIBUSB_SUCCESS) {
+        Log::Debug() << "libusb_set_interface_alt_setting failed: " << libusb_error_name(err);
+        throw UsbError("failed to set interface alt setting", err);
+    }
+    Log::Debug() << "Interface alt setting set to bInterfaceNumber="
+        << static_cast<int>(this->alt.bInterfaceNumber) << " bAlternateSetting=" << static_cast<int>(this->alt.bAlternateSetting);
 }
 
 void UsbPrinter::Open() {
@@ -83,8 +100,9 @@ void UsbPrinter::Open() {
         throw UsbError("failed to open device", err);
     }
     this->detachKernelDriver();
-    this->setConfig(this->config->bConfigurationValue);
+    this->setConfig();
     this->claim();
+    this->setAltSetting();
 }
 
 void UsbPrinter::release() noexcept {
@@ -155,9 +173,15 @@ std::string UsbPrinter::getDeviceId() {
         0, this->config->bConfigurationValue,
         (static_cast<uint16_t>(this->alt.bInterfaceNumber) << 8) | this->alt.bAlternateSetting, buff, sizeof(buff), 5000
     );
-    assert(err >= 0);
+    if (err < 0) {
+        Log::Debug() << "libusb_control_transfer failed: " << libusb_error_name(err);
+        throw UsbError("failed to get 1284DeviceID", err);
+    }
     uint16_t length = (static_cast<uint16_t>(buff[0]) << 8) | static_cast<uint16_t>(buff[1]);
-    assert(length >= 2 && length+2 < 1024);
+    if (!(length >= 2 && length+2 < 1024)) {
+        Log::Debug() << "1284DeviceID length = " << length;
+        throw UsbError("device returned invalid 1284DeviceID length");
+    }
     return std::string(reinterpret_cast<char*>(buff+2), length-2);
 }
 
