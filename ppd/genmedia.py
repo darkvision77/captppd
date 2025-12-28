@@ -11,7 +11,7 @@ SIZE_DOT_H_VAR = "cupsInteger1"
 PAPER_SIZE_ID_VAR = "cupsInteger2"
 
 # left bottom right top
-MARGINS_MM = (0, 3.556, 0, 3.556)
+MARGINS_MM = (2, 3.556, 2, 3.556)
 
 PAGE_SIZE_TABLE = {
     0x01: ("Letter", 0x0d, 612, 792, 5100, 6600),
