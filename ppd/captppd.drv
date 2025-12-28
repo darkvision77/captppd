@@ -57,24 +57,24 @@ Option "cupsHalftoneType/Dithering type" PickOne AnySetup 40
 #endif
 
 {
-    ModelName "LBP800"
-    Attribute "NickName" "" "Canon LBP800, captppd $CAPTBACKEND_VERSION"
+    ModelName "LBP-800"
+    Attribute "NickName" "" "Canon LBP-800, captppd $CAPTBACKEND_VERSION"
     Throughput 8
     Attribute "1284DeviceID" "" "MFG:Canon;MDL:LBP-800;CMD:CAPT;VER:1.0;CLS:PRINTER;DES:Canon LBP-800" // assumed from LBP810
     PCFileName "LBP800CAPTPPD.ppd"
 }
 
 {
-    ModelName "LBP810"
-    Attribute "NickName" "" "Canon LBP810, captppd $CAPTBACKEND_VERSION"
+    ModelName "LBP-810"
+    Attribute "NickName" "" "Canon LBP-810, captppd $CAPTBACKEND_VERSION"
     Throughput 8
     Attribute "1284DeviceID" "" "MFG:Canon;MDL:LBP-810;CMD:CAPT;VER:1.0;CLS:PRINTER;DES:Canon LBP-810"
     PCFileName "LBP810CAPTPPD.ppd"
 }
 
 {
-    ModelName "LBP1120"
-    Attribute "NickName" "" "Canon LBP1120, captppd $CAPTBACKEND_VERSION"
+    ModelName "LASER SHOT LBP-1120"
+    Attribute "NickName" "" "Canon LASER SHOT LBP-1120, captppd $CAPTBACKEND_VERSION"
     Throughput 10
     Attribute "1284DeviceID" "" "MFG:Canon;MDL:LASER SHOT LBP-1120;CMD:CAPT;VER:1.0;CLS:PRINTER;DES:Canon LASER SHOT LBP-1120"
     PCFileName "LBP1120CAPTPPD.ppd"
