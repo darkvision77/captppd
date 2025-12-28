@@ -7,6 +7,8 @@ namespace Log {
     private:
         std::ostream& stream;
         bool terminate = true;
+
+        std::ios state = std::ios(nullptr);
     public:
         explicit StreamTerminator(std::ostream& stream) noexcept;
         ~StreamTerminator();
