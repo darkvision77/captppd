@@ -157,7 +157,8 @@ bool CaptPrinter::Print(StopTokenType stopToken, RasterStreambuf& rasterStr) {
             return false;
         }
     }
-    Log::Debug() << "Status after CaptPrinter::Print(): " << this->GetStatus();
+    Capt::ExtendedStatus status = this->GetStatus();
+    Log::Debug() << "Status after CaptPrinter::Print(): " << status;
     return true;
 }
 
@@ -182,6 +183,7 @@ bool CaptPrinter::Clean(StopTokenType stopToken) {
         this->WaitPrintEnd(stopToken);
         break;
     }
-    Log::Debug() << "Status after CaptPrinter::Clean(): " << this->GetStatus();
+    Capt::ExtendedStatus status = this->GetStatus();
+    Log::Debug() << "Status after CaptPrinter::Clean(): " << status;
     return true;
 }
