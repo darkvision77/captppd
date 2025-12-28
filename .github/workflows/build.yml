@@ -44,15 +44,15 @@ on:
       debian-deps:
         required: false
         type: string
-        default: git build-essential pkg-config ninja-build cups cups-ppdc libcups2-dev libusb-1.0-0-dev cmake dpkg-dev
+        default: git build-essential pkg-config ninja-build cups cups-ppdc libcups2-dev libusb-1.0-0-dev cmake dpkg-dev python3
       freebsd-deps:
         required: false
         type: string
-        default: git ninja googletest pkgconf llvm-devel cups cmake
+        default: git ninja googletest pkgconf llvm-devel cups cmake python3
       openbsd-deps:
         required: false
         type: string
-        default: git cmake gtest ninja pkgconf cups cups-libs libusb1
+        default: git cmake gtest ninja pkgconf cups cups-libs libusb1 python
 
       lpadmin-cmd:
         required: false

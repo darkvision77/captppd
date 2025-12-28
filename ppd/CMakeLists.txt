@@ -1,4 +1,5 @@
 find_program(PPDC NAMES ppdc REQUIRED)
+find_package(Python REQUIRED)
 
 set(
     PPD_FILES
@@ -7,6 +8,17 @@ set(
     "${CMAKE_CURRENT_BINARY_DIR}/LBP1120CAPTPPD.ppd"
     "${CMAKE_CURRENT_BINARY_DIR}/LBP1210CAPTPPD.ppd"
     "${CMAKE_CURRENT_BINARY_DIR}/LBP3200CAPTPPD.ppd"
+)
+
+add_custom_command(
+    OUTPUT "${CMAKE_CURRENT_LIST_DIR}/captmedia.defs"
+    COMMAND
+    "${Python_EXECUTABLE}"
+    "${CMAKE_CURRENT_LIST_DIR}/genmedia.py"
+    "${CMAKE_CURRENT_LIST_DIR}/captmedia.defs"
+    DEPENDS
+    "${CMAKE_CURRENT_LIST_DIR}/genmedia.py"
+    VERBATIM
 )
 
 add_custom_command(
@@ -19,7 +31,7 @@ add_custom_command(
     "${CMAKE_CURRENT_LIST_DIR}/captppd.drv"
     DEPENDS
     "${CMAKE_CURRENT_LIST_DIR}/captppd.drv"
-    "${CMAKE_CURRENT_LIST_DIR}/media.drv"
+    "${CMAKE_CURRENT_LIST_DIR}/captmedia.defs"
     VERBATIM
 )
 

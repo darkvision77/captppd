@@ -17,18 +17,16 @@ ColorDevice no
 *Resolution k 1 0 0 0 "600dpi/600 DPI"
 ManualCopies yes
 
-// cupsInteger0 - MarginLeft
-// cupsInteger1 - MarginTop
-// cupsInteger2 - PaperWidth
-// cupsInteger3 - PaperHeight
-// cupsInteger4 - PaperSize
+// cupsInteger0 - PaperWidth
+// cupsInteger1 - PaperHeight
+// cupsInteger2 - PaperSize
 
 // cupsInteger5 - SmoothEnable
 // cupsInteger6 - TonerSaving
 // cupsCompression - TonerDensity
 // cupsMediaType - Mode
 
-#include "media.drv"
+#include "captmedia.defs"
 
 *MediaType 0 "PlainPaper/Plain Paper"
 MediaType 2 "PlainPaperL/Plain Paper L"

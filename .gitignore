@@ -4,6 +4,7 @@ __pycache__/
 .vscode/
 
 captbackend/Config.hpp
+ppd/captmedia.defs
 
 # Prerequisites
 *.d
