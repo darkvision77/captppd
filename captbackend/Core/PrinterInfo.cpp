@@ -107,8 +107,8 @@ void PrinterInfo::Report(std::ostream& stream) const {
     // so that backends can be distinguished in the CUPS web UI.
     stream << "direct "; // device-class
     this->WriteUri(stream) << ' '; // uri
-    stream << '"' << this->Manufacturer << ' ' << this->Model << " (" CAPTBACKEND_NAME ")\" "; // device-make-and-model/description
-    stream << '"' << this->Manufacturer << ' ' << this->Model << '"' << ' '; // device-info/name
+    stream << '"' << this->Manufacturer << ' ' << this->Model << '"' << ' '; // device-make-and-model
+    stream << '"' << this->Manufacturer << ' ' << this->Model << "(" CAPTBACKEND_NAME ")\" "; // device-info/name
     stream << '"' << this->DeviceId << '"'; // device-id
     stream << " \"\""; // device-location
     stream << std::endl;
