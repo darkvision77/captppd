@@ -18,10 +18,10 @@ TEST(PrinterInfoTest, Uri) {
 
     std::ostringstream ss;
     info.WriteUri(ss);
-    for (const auto c : ss.view()) {
+    for (const auto c : ss.str()) {
         EXPECT_NE(c, ' ') << "spaces not allowed";
     }
-    EXPECT_TRUE(info.HasUri(ss.view()));
+    EXPECT_TRUE(info.HasUri(ss.str()));
     EXPECT_TRUE(info.HasUri(CAPTBACKEND_NAME "://Canon/LBP3200?serial=98765432"));
     EXPECT_TRUE(info.HasUri(CAPTBACKEND_NAME "://Canon/LBP3200?somevar=test&serial=98765432"));
     EXPECT_TRUE(info.HasUri(CAPTBACKEND_NAME "://Canon/LBP3200?serial=98765432&somevar=test"));
@@ -56,10 +56,10 @@ TEST(PrinterInfoTest, UriSpaces) {
 
     std::ostringstream ss;
     info.WriteUri(ss);
-    for (const auto c : ss.view()) {
+    for (const auto c : ss.str()) {
         EXPECT_NE(c, ' ') << "spaces not allowed";
     }
-    EXPECT_TRUE(info.HasUri(ss.view()));
+    EXPECT_TRUE(info.HasUri(ss.str()));
     EXPECT_TRUE(info.HasUri(CAPTBACKEND_NAME "://Canon/LBP 3200?serial=98765432"));
     EXPECT_TRUE(info.HasUri(CAPTBACKEND_NAME "://Canon/LBP%203200?serial=98765432"));
     EXPECT_FALSE(info.HasUri(CAPTBACKEND_NAME "://Canon/LBP3200?serial=98765432"));
