@@ -26,9 +26,13 @@ TEST(PrinterInfoTest, Uri) {
     EXPECT_TRUE(info.HasUri(CAPTBACKEND_NAME "://Canon/LBP3200?somevar=test&serial=98765432"));
     EXPECT_TRUE(info.HasUri(CAPTBACKEND_NAME "://Canon/LBP3200?serial=98765432&somevar=test"));
 
+    EXPECT_FALSE(info.HasUri(CAPTBACKEND_NAME "://Canon"));
     EXPECT_FALSE(info.HasUri(CAPTBACKEND_NAME "://Canon/LBP3200"));
     EXPECT_FALSE(info.HasUri(CAPTBACKEND_NAME "://Canon/LBP3201?serial=98765432"));
     EXPECT_FALSE(info.HasUri(CAPTBACKEND_NAME "://Can0n/LBP3200?serial=98765432"));
+
+    EXPECT_FALSE(info.HasUri(CAPTBACKEND_NAME "://CanonLBP3200?serial=98765432"));
+    EXPECT_FALSE(info.HasUri(CAPTBACKEND_NAME "://Canon/LBP3200serial=98765432"));
 
     EXPECT_FALSE(info.HasUri(CAPTBACKEND_NAME "://Canon/LBP3200?"));
     EXPECT_FALSE(info.HasUri(CAPTBACKEND_NAME "://Can0n/LBP3200?serial="));
