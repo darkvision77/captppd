@@ -18,7 +18,10 @@ TEST(PrinterInfoTest, Uri) {
 
     std::ostringstream ss;
     info.WriteUri(ss);
-    EXPECT_TRUE(info.HasUri(ss.str()));
+    for (const auto c : ss.view()) {
+        EXPECT_NE(c, ' ') << "spaces not allowed";
+    }
+    EXPECT_TRUE(info.HasUri(ss.view()));
     EXPECT_TRUE(info.HasUri(CAPTBACKEND_NAME "://Canon/LBP3200?serial=98765432"));
     EXPECT_TRUE(info.HasUri(CAPTBACKEND_NAME "://Canon/LBP3200?somevar=test&serial=98765432"));
     EXPECT_TRUE(info.HasUri(CAPTBACKEND_NAME "://Canon/LBP3200?serial=98765432&somevar=test"));
@@ -34,6 +37,28 @@ TEST(PrinterInfoTest, Uri) {
     EXPECT_FALSE(info.HasUri(CAPTBACKEND_NAME "://Canon/LBP3200?serial=x98765432"));
     EXPECT_FALSE(info.HasUri(CAPTBACKEND_NAME "://Canon/LBP3200?serial 98765432"));
     EXPECT_FALSE(info.HasUri(CAPTBACKEND_NAME "://Canon/LBP3200?serial98765432"));
+}
+
+TEST(PrinterInfoTest, UriSpaces) {
+    PrinterInfo info{
+        .DeviceId = "MFG:Canon;MDL:LBP 3200;CMD:CAPT;VER:1.0;CLS:PRINTER;DES:Canon LBP 3200",
+        .Manufacturer = "Canon",
+        .Model = "LBP 3200",
+        .Description = "Canon LBP 3200",
+        .Serial = "98765432",
+        .CommandSet = "CAPT",
+        .CmdVersion = "1.0",
+    };
+
+    std::ostringstream ss;
+    info.WriteUri(ss);
+    for (const auto c : ss.view()) {
+        EXPECT_NE(c, ' ') << "spaces not allowed";
+    }
+    EXPECT_TRUE(info.HasUri(ss.view()));
+    EXPECT_TRUE(info.HasUri(CAPTBACKEND_NAME "://Canon/LBP 3200?serial=98765432"));
+    EXPECT_TRUE(info.HasUri(CAPTBACKEND_NAME "://Canon/LBP%203200?serial=98765432"));
+    EXPECT_FALSE(info.HasUri(CAPTBACKEND_NAME "://Canon/LBP3200?serial=98765432"));
 }
 
 TEST(PrinterInfoTest, Parse) {
