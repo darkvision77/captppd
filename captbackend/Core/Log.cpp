@@ -1,6 +1,10 @@
 #include "Log.hpp"
+#include <cassert>
+#include <iostream>
 
 namespace Log {
+    static std::ostream* LogStream = &std::clog;
+
     StreamTerminator::StreamTerminator(std::ostream& stream) noexcept
         : stream(stream) {
         this->state.copyfmt(stream);
@@ -19,7 +23,12 @@ namespace Log {
         }
     }
 
+    void SetLogStream(std::ostream& stream) noexcept {
+        LogStream = &stream;
+    }
+
     StreamTerminator Log(std::string_view level) {
-        return StreamTerminator(std::cerr) << level << ": ";
+        assert(LogStream != nullptr);
+        return StreamTerminator(*LogStream) << level << ": ";
     }
 }

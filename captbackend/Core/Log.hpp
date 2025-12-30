@@ -31,6 +31,7 @@ namespace Log {
         }
     };
 
+    void SetLogStream(std::ostream& stream) noexcept;
     StreamTerminator Log(std::string_view level);
 
     inline StreamTerminator Debug() { return Log("DEBUG"); }

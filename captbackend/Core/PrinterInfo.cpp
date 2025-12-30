@@ -98,14 +98,16 @@ bool PrinterInfo::HasUri(std::string_view uri) const {
 // device-info
 // device-id
 // device-location
-void PrinterInfo::Report(std::ostream& stream) const {
-    // The (CAPTBACKEND_NAME) in the device-make-and-model is needed
-    // so that backends can be distinguished in the CUPS web UI.
-    stream << "direct "; // device-class
-    this->WriteUri(stream) << ' '; // uri
-    stream << '"' << this->Manufacturer << ' ' << this->Model << '"' << ' '; // device-make-and-model
-    stream << '"' << this->Manufacturer << ' ' << this->Model << "(" CAPTBACKEND_NAME ")\" "; // device-info/name
-    stream << '"' << this->DeviceId << '"'; // device-id
-    stream << " \"\""; // device-location
-    stream << std::endl;
+std::ostream& PrinterInfo::Report(std::ostream& stream) const {
+    if (stream.good()) {
+        // The (CAPTBACKEND_NAME) in the device-make-and-model is needed
+        // so that backends can be distinguished in the CUPS web UI.
+        stream << "direct "; // device-class
+        this->WriteUri(stream) << ' '; // uri
+        stream << '"' << this->Manufacturer << ' ' << this->Model << '"' << ' '; // device-make-and-model
+        stream << '"' << this->Manufacturer << ' ' << this->Model << "(" CAPTBACKEND_NAME ")\" "; // device-info/name
+        stream << '"' << this->DeviceId << '"'; // device-id
+        stream << " \"\""; // device-location
+    }
+    return stream;
 }

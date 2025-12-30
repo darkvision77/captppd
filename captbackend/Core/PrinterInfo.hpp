@@ -59,5 +59,5 @@ struct PrinterInfo {
     std::ostream& WriteUri(std::ostream& os) const;
     [[nodiscard]] bool HasUri(std::string_view uri) const;
 
-    void Report(std::ostream& stream) const;
+    std::ostream& Report(std::ostream& stream) const;
 };

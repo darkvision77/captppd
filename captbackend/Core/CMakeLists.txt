@@ -5,4 +5,5 @@ target_sources(
     StateReporter.cpp
     Log.cpp
     PrinterInfo.cpp
+    BufferedWriter.cpp
 )

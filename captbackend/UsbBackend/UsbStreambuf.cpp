@@ -67,6 +67,5 @@ int UsbStreambuf::sync() {
     }
 
     this->setp(this->pbase(), this->epptr());
-    assert(this->pptr() == this->pbase());
     return 0;
 }

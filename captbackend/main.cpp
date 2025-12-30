@@ -1,3 +1,4 @@
+#include "Core/BufferedWriter.hpp"
 #include "Core/RasterError.hpp"
 #include "Core/StateReporter.hpp"
 #include "Core/CaptPrinter.hpp"
@@ -66,7 +67,7 @@ static void discover(UsbBackend& backend) {
             Log::Debug() << "Skipping non-CAPT v1 printer (" << info->DeviceId << ')';
             continue;
         }
-        info->Report(std::cout);
+        info->Report(std::cout) << '\n';
     }
 }
 
@@ -83,15 +84,20 @@ int main(int argc, const char* argv[]) {
     }
 
     if (argc != 1 && argc != 6 && argc != 7) {
-        std::cout << "Usage: " << argv[0] << " job-id user title copies options [file]" << std::endl;
+        std::cout << "Usage: " << argv[0] << " job-id user title copies options [file]" << '\n';
         return CUPS_BACKEND_FAILED;
     }
+
+    char logBuff[1024];
+    BufferedWriter writer(std::cerr, logBuff);
+    std::ostream logStream(&writer);
+    Log::SetLogStream(logStream);
 
     Log::Debug() << CAPTBACKEND_NAME " version " CAPTBACKEND_VERSION_STRING;
     Log::Debug() << "libcapt version " LIBCAPT_VERSION_STRING;
 
     try {
-        StateReporter reporter(std::cerr);
+        StateReporter reporter(logStream);
         UsbBackend backend;
         backend.Init();
 
