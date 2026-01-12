@@ -32,6 +32,7 @@ theoretically, is completely reliable.
 - gcc >= 11 or clang >= 16
 - cmake >= 3.21
 - git
+- python3
 - [libcapt](https://github.com/darkvision77/libcapt) (downloaded automatically by CMake FetchContent)
 
 #### Run-time
@@ -113,6 +114,9 @@ grep '\] \[Job' /var/log/cups/error_log
 ## See also
 - [UoWPrint](https://printserver.ink/) — convert your old USB printer (or MFP) into Wi-Fi printer/MFP
 - [mounaiban/captdriver](https://github.com/mounaiban/captdriver) — open source CUPS driver for the newer Canon LBP models
+
+## SAST Tools
+[PVS-Studio](https://pvs-studio.com/pvs-studio/?utm_source=website&utm_medium=github&utm_campaign=open_source) — static analyzer for C, C++, C#, and Java code.
 
 ## License
 captppd is licensed under a 2-clause BSD license.
