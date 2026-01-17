@@ -5,9 +5,9 @@
 #include <string>
 #include <optional>
 
-typedef std::unique_ptr<libusb_device, decltype(&libusb_unref_device)> libusb_device_ptr;
-typedef std::unique_ptr<libusb_device_handle, decltype(&libusb_close)> libusb_device_handle_ptr;
-typedef std::unique_ptr<libusb_config_descriptor, decltype(&libusb_free_config_descriptor)> libusb_config_descriptor_ptr;
+using libusb_device_ptr = std::unique_ptr<libusb_device, decltype(&libusb_unref_device)>;
+using libusb_device_handle_ptr = std::unique_ptr<libusb_device_handle, decltype(&libusb_close)>;
+using libusb_config_descriptor_ptr = std::unique_ptr<libusb_config_descriptor, decltype(&libusb_free_config_descriptor)>;
 
 class UsbStreambuf;
 

@@ -7,7 +7,7 @@
 #include <libusb.h>
 #include <optional>
 
-typedef std::unique_ptr<libusb_device*, void(*)(libusb_device**)> libusb_device_list;
+using libusb_device_list = std::unique_ptr<libusb_device*, void(*)(libusb_device**)>;
 
 static inline std::pair<libusb_device_list, ssize_t> getDeviceList(libusb_context* ctx) {
     libusb_device** devs;

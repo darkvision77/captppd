@@ -4,8 +4,8 @@
 #if HAVE_STOP_TOKEN
 
 #include <stop_token>
-typedef std::stop_token StopToken;
-typedef std::stop_source StopSource;
+using StopToken = std::stop_token;
+using StopSource = std::stop_source;
 
 #else
 

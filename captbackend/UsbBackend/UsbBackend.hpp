@@ -3,7 +3,7 @@
 #include <libusb.h>
 #include <vector>
 
-typedef std::unique_ptr<libusb_context, decltype(&libusb_exit)> libusb_context_ptr;
+using libusb_context_ptr = std::unique_ptr<libusb_context, decltype(&libusb_exit)>;
 
 class UsbBackend {
 private:
