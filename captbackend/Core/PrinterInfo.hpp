@@ -41,15 +41,15 @@ struct PrinterInfo {
             auto k = std::ranges::subrange(part.begin(), delim);
             std::string v = impl::makeString(std::next(delim), part.end());
             if (std::ranges::equal(k, "MFG"sv) || std::ranges::equal(k, "MANUFACTURER"sv)) {
-                info.Manufacturer = v;
+                info.Manufacturer = std::move(v);
             } else if (std::ranges::equal(k, "MDL"sv) || std::ranges::equal(k, "MODEL"sv)) {
-                info.Model = v;
+                info.Model = std::move(v);
             } else if (std::ranges::equal(k, "DES"sv) || std::ranges::equal(k, "DESCRIPTION"sv)) {
-                info.Description = v;
+                info.Description = std::move(v);
             } else if (std::ranges::equal(k, "CMD"sv) || std::ranges::equal(k, "COMMAND SET"sv)) {
-                info.CommandSet = v;
+                info.CommandSet = std::move(v);
             } else if (std::ranges::equal(k, "VER"sv)) {
-                info.CmdVersion = v;
+                info.CmdVersion = std::move(v);
             }
         }
         return info;
