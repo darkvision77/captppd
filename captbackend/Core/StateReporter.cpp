@@ -7,7 +7,7 @@ using namespace Capt;
 StateReporter::StateReporter(std::ostream& stream) noexcept : stream(stream) {}
 
 void StateReporter::Update(ExtendedStatus status) {
-    bool serviceCall = (status.Engine & EngineReadyStatus::SERVICE_CALL) != 0;
+    bool serviceCall = status.ServiceCall();
     bool fatal = status.FatalError();
     if (serviceCall || fatal) {
         this->Clear();
