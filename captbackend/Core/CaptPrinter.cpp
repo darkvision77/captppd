@@ -30,7 +30,7 @@ Capt::ExtendedStatus CaptPrinter::GetStatus() {
 
 Capt::ExtendedStatus CaptPrinter::WaitReady(StopTokenType stopToken) {
     Capt::ExtendedStatus status = this->GetStatus();
-    while (!stopToken.stop_requested() && !status.Ready()) {
+    while (!stopToken.stop_requested() && !(status.Ready() && status.PaperAvailableBits != 0)) {
         if (status.ClearErrorNeeded()) {
             Log::Debug() << "Calling ClearError()";
             Log::Debug() << "Status is " << status;
