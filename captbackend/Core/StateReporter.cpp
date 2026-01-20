@@ -1,10 +1,17 @@
 #include "StateReporter.hpp"
 #include <algorithm>
+#include <cassert>
 #include <string_view>
 
 using namespace Capt;
 
-StateReporter::StateReporter(std::ostream& stream) noexcept : stream(stream) {}
+StateReporter::StateReporter(std::ostream& stream) noexcept : stream(stream) {
+    assert(stream.exceptions() == std::ios_base::goodbit);
+}
+
+StateReporter::~StateReporter() noexcept {
+    this->Clear();
+}
 
 void StateReporter::Update(ExtendedStatus status) {
     bool serviceCall = status.ServiceCall();
@@ -43,13 +50,13 @@ void StateReporter::SetReason(std::string_view reason, bool set) {
     }
 }
 
-void StateReporter::Clear() {
+void StateReporter::Clear() noexcept {
     for (const std::string_view s : this->reasons) {
         this->stream << "STATE: -" << s << std::endl;
     }
     this->reasons.clear();
 }
 
-void StateReporter::Page(unsigned page) {
+void StateReporter::Page(unsigned page) noexcept {
     this->stream << "PAGE: page-number " << page << std::endl;
 }

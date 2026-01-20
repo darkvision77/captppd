@@ -9,14 +9,13 @@ private:
     std::ostream& stream;
     std::unordered_set<std::string_view> reasons;
 public:
+    // stream MUST be noexcept
     explicit StateReporter(std::ostream& stream) noexcept;
-    inline ~StateReporter() {
-        this->Clear();
-    }
+    ~StateReporter() noexcept;
 
     void Update(Capt::ExtendedStatus status);
     void SetReason(std::string_view reason, bool set);
-    void Clear();
+    void Clear() noexcept;
 
-    void Page(unsigned page);
+    void Page(unsigned page) noexcept;
 };
