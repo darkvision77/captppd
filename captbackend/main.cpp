@@ -77,7 +77,7 @@ int main(int argc, const char* argv[]) {
     std::signal(SIGINT, sighandler);
     StopToken stopToken = stopSource.get_token();
 
-    if (argc == 2 && (std::strcmp(argv[1], "-v") || std::strcmp(argv[1], "--version"))) {
+    if (argc == 2 && (std::strcmp(argv[1], "-v") == 0 || std::strcmp(argv[1], "--version") == 0)) {
         std::cout << CAPTBACKEND_NAME " version " CAPTBACKEND_VERSION_STRING << '\n';
         std::cout << "libcapt version " LIBCAPT_VERSION_STRING << '\n';
         return CUPS_BACKEND_OK;
