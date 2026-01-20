@@ -18,5 +18,5 @@ private:
 
     int sync() override;
 public:
-    explicit UsbStreambuf(UsbPrinter& printer, std::size_t buffSize = 65535, unsigned timeoutMs = 5000);
+    explicit UsbStreambuf(UsbPrinter& printer, std::size_t wbuffSize = 65535, unsigned timeoutMs = 5000);
 };
