@@ -16,17 +16,18 @@ option(CAPTPPD_BUILD_TESTS "Build tests" OFF)
 option(CAPTPPD_COVERAGE "Enable code coverage" OFF)
 option(CAPTPPD_SANITIZE "Enable address and undefined sanitizers" OFF)
 option(CAPTPPD_DITHERING_OPT "Enable dithering option in PPD" ON)
-option(CAPTPPD_LTO "Enable LTO" OFF)
 set(CAPTPPD_BACKEND_NAME "captusb" CACHE STRING "Backend name")
 
 add_compile_options(-Wall -Wextra -Wpedantic)
 
 list(APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake")
 
-if(CAPTPPD_LTO)
-    include(CheckIPOSupported)
-    check_ipo_supported()
-    set(CMAKE_INTERPROCEDURAL_OPTIMIZATION ON)
+include(CheckIPOSupported)
+check_ipo_supported(RESULT LTO_SUPPORTED)
+if(LTO_SUPPORTED)
+    set(CMAKE_INTERPROCEDURAL_OPTIMIZATION_RELEASE ON)
+    set(CMAKE_INTERPROCEDURAL_OPTIMIZATION_RELWITHDEBINFO OFF)
+    set(CMAKE_INTERPROCEDURAL_OPTIMIZATION_DEBUG OFF)
 endif()
 
 if(CAPTPPD_COVERAGE)
