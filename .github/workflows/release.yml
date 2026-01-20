@@ -28,7 +28,7 @@ jobs:
       arch: ${{ matrix.arch }}
       os: ${{ matrix.os }}
       os-version: ${{ matrix.os-version }}
-      cmake-args: -DCMAKE_BUILD_TYPE=Release -DCAPTPPD_LTO=ON
+      cmake-args: -DCMAKE_BUILD_TYPE=Release
       cxxflags: -Werror
       tests: true
       verify: true
