@@ -29,6 +29,10 @@ jobs:
             os-version: bookworm
 
           - arch: x86_64
+            os: fedora
+            os-version: '42'
+
+          - arch: x86_64
             os: freebsd
             os-version: '14.3'
           - arch: x86_64
@@ -39,7 +43,7 @@ jobs:
       arch: ${{ matrix.arch }}
       os: ${{ matrix.os }}
       os-version: ${{ matrix.os-version }}
-      cmake-args: ${{ matrix.os != 'openbsd' && matrix.arch == 'x86_64' && '-DCAPTPPD_SANITIZE=ON' || '' }}
+      cmake-args: ${{ matrix.os != 'openbsd' && matrix.arch == 'x86_64' && '-DCAPTPPD_SANITIZE=ON -DLIBCAPT_SANITIZE=ON' || '' }}
       cxxflags: -Werror
       tests: true
       verify: true

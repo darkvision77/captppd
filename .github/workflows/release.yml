@@ -21,6 +21,9 @@ jobs:
             os: debian
             os-version: bookworm
           - arch: x86_64
+            os: fedora
+            os-version: '42'
+          - arch: x86_64
             os: freebsd
             os-version: '14.3'
     uses: ./.github/workflows/build.yml

@@ -45,6 +45,10 @@ on:
         required: false
         type: string
         default: git build-essential pkg-config ninja-build cups cups-ppdc libcups2-dev libusb-1.0-0-dev cmake dpkg-dev python3
+      fedora-deps:
+        required: false
+        type: string
+        default: g++ git cmake ninja-build pkgconf cups cups-devel libusb1-devel python rpmdevtools gtest-devel gmock-devel libasan libubsan
       freebsd-deps:
         required: false
         type: string
@@ -232,6 +236,71 @@ jobs:
         with:
           name: debian-${{ inputs.os-version }}-${{ inputs.arch }}
           path: artifacts/*.deb
+          if-no-files-found: error
+
+  build-fedora:
+    if: inputs.os == 'fedora' && inputs.arch == 'x86_64'
+    runs-on: ubuntu-24.04
+    container:
+      image: fedora:${{ inputs.os-version }}
+    name: Build on Fedora ${{ inputs.os-version }} (${{ inputs.arch }})
+    steps:
+      - name: Install deps
+        run: |
+          dnf -y update
+          dnf -y install ${{ inputs.fedora-deps }}
+
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - name: Configure
+        run: cmake -G Ninja -S. -B build ${{ inputs.cmake-args }} ${{ inputs.tests && inputs.cmake-test-args }} -DCMAKE_CXX_FLAGS="${{ inputs.cxxflags }}"
+
+      - name: Compile
+        run: cmake --build build -v -j
+
+      - name: Run tests
+        if: inputs.tests
+        run: ctest --test-dir build --output-on-failure -j
+
+      - name: Package
+        if: inputs.package
+        run: cd build && cpack --verbose -G RPM
+
+      - name: Start CUPS service
+        if: inputs.verify
+        run: /usr/sbin/cupsd
+
+      - name: Ensure not installed
+        if: inputs.verify
+        run: set +e; ${{ inputs.lpadmin-cmd }}; [ $? -eq 0 ] && exit 1 || true
+
+      - name: Verify (install package)
+        if: inputs.verify && inputs.package
+        run: dnf -y install build/package/*.rpm
+
+      - name: Verify (install)
+        if: inputs.verify && !inputs.package
+        run: cmake --install build
+
+      - name: Verify (lpadmin)
+        if: inputs.verify
+        run: ${{ inputs.lpadmin-cmd }}
+
+      - name: Verify (backend version)
+        if: inputs.verify
+        run: $(cups-config --serverbin)/backend/captusb --version
+
+      - name: List packages
+        if: inputs.package
+        run: ls -l build/package/*.rpm
+
+      - name: Upload artifact
+        if: inputs.package && inputs.upload
+        uses: actions/upload-artifact@v6
+        with:
+          name: fedora-${{ inputs.os-version }}-${{ inputs.arch }}
+          path: build/package/*.rpm
           if-no-files-found: error
 
   build-freebsd:
