@@ -7,9 +7,6 @@ Implemented as a CUPS backend using libusb.
 The driver is divided into two parts: the CUPS side (this repository)
 and the protocol side ([libcapt](https://github.com/darkvision77/libcapt)).
 
-> [!IMPORTANT]
-> This project is currently in an EXPERIMENTAL state.
-
 ## Target devices
 | Model   | Cartridge     | PPM (A4) | Max Resolution | Year (approx.) |
 |---------|---------------|----------|----------------|----------------|
@@ -20,7 +17,20 @@ and the protocol side ([libcapt](https://github.com/darkvision77/libcapt)).
 | LBP3200 | EP-26/EP-27   | 18       | 600 dpi        | 2004-2006      |
 
 ## Status
-It cannot be said that the driver is stable until there are appropriate tests on the verified simulator.
+| Feature                    | Status          |
+|----------------------------|-----------------|
+| 600 DPI                    | SUPPORTED       |
+| 300 DPI                    | NOT IMPLEMENTED |
+| Custom media size          | NOT IMPLEMENTED |
+| Borderless printing        | SUPPORTED*      |
+| Multi-page jobs            | SUPPORTED       |
+| Cleaning                   | SUPPORTED       |
+| Toner saving               | SUPPORTED       |
+| Toner density              | SUPPORTED       |
+| Media type selection       | SUPPORTED       |
+| Automatic Image Refinement | SUPPORTED       |
+
+\* *The hardware cannot print ~4 mm from the top anyway.*
 
 At the moment, the protocol is quite well known.
 The raster format (SCoA compression algorithm) is also well known and,
@@ -33,7 +43,7 @@ theoretically, is completely reliable.
 - cmake >= 3.21
 - git
 - python3
-- [libcapt](https://github.com/darkvision77/libcapt) (downloaded automatically by CMake FetchContent)
+- [libcapt](https://github.com/darkvision77/libcapt) >= 1.0 (downloaded automatically by CMake FetchContent)
 
 #### Run-time
 - cups
@@ -84,7 +94,7 @@ device for LBP3200: captusb://Canon/LBP3200?drv=capt&serial=00000000
 ### Adding printer from user interface
 #### CUPS web interface
 1. Go to admin page (default: http://127.0.0.1:631/admin).
-2. Click «Find New Printers».
+2. Click “Find New Printers”.
 3. Select the captusb printer.
 4. And the model should be like `Canon LBP3200, captppd 0.1.0`.
 
